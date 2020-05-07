@@ -6,7 +6,7 @@
 # Developer.......: Andre Essing (https://twitter.com/aessing)
 #                                (https://www.linkedin.com/in/aessing/)
 # -----------------------------------------------------------------------------
-# File............: dockerbuild.sh
+# File............: build-BedrockContainer.sh
 # Summary.........: This shell script builds the container from my GitHub Repo
 # Part of.........: Minecraft on Docker
 # Date............: 07.05.2020
