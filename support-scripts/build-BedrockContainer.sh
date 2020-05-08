@@ -10,7 +10,7 @@
 # Summary.........: This shell script builds the container from my GitHub Repo
 # Part of.........: Minecraft on Docker
 # Date............: 07.05.2020
-# Version.........: 1.0.0
+# Version.........: 1.1.0
 # OS Version......: Ubuntu Linux
 # Bedrock Version.: 1.14.60.5
 # -----------------------------------------------------------------------------
@@ -21,11 +21,27 @@
 # Changes:
 # DD.MM.YYYY    Developer       Version     Reason
 # 07.05.2020    Andre Essing    1.0.0       Initial Release
+# 08.05.2020    Andre Essing    1.1.0       Enhanced Options
 # =============================================================================
 
+
+
+###############################################################################
+#
+# Build the container from GitHub repository
+#
 docker build https://github.com/aessing/minecraft-bedrock.git --tag aessing/minecraft-bedrock
-docker tag aessing/minecraft-bedrock aessing/minecraft-bedrock:1.0.0
+
+
+
+###############################################################################
+#
+# Tag the container with version and latest tags
+#
+docker tag aessing/minecraft-bedrock aessing/minecraft-bedrock:1.1.0
 docker tag aessing/minecraft-bedrock aessing/minecraft-bedrock:latest
+
+
 
 ###############################################################################
 #EOF
