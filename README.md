@@ -2,7 +2,7 @@
 Building a Minecraft Bedrock server into an docker image
 
 
-#MIT License
+# MIT License
 
 Copyright (c) 2020 Andre Essing
 
