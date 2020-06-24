@@ -3,29 +3,19 @@
 # =============================================================================
 #                              Andre Essing
 # -----------------------------------------------------------------------------
-# Developer.......: Andre Essing (https://twitter.com/aessing)
+# Developer.......: Andre Essing (https://www.andre-essing.de/)
+#                                (https://github.com/aessing)
+#                                (https://twitter.com/aessing)
 #                                (https://www.linkedin.com/in/aessing/)
 # -----------------------------------------------------------------------------
 # File............: startup.sh
 # Summary.........: This shell script prepares the container and startes the 
 #                   Minecraft Bedrock Server
-# Part of.........: Minecraft on Docker
-# Date............: 07.05.2020
-# Version.........: 1.1.0
-# OS Version......: Ubuntu Linux
-# Bedrock Version.: 1.14.60.5
-# Note............: This Dockerfile is build from a GitHub Repository of 
-#                   FirzenYogesh (Yogesh S) (https://github.com/FirzenYogesh)
-#                   https://github.com/FirzenYogesh/minecraft-bedrock
+# Part of.........: Minecraft Bedrock Server on Docker
 # -----------------------------------------------------------------------------
 # THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND,
 # EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE IMPLIED
 # WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE.
-# -----------------------------------------------------------------------------
-# Changes:
-# DD.MM.YYYY    Developer       Version     Reason
-# 07.05.2020    Andre Essing    1.0.0       Initial Release
-# 08.05.2020    Andre Essing    1.1.0       Enhanced Options
 # =============================================================================
 
 
@@ -45,15 +35,6 @@ mkdir -p "${DATA_PATH}/world_templates"
 cp -r "${SERVER_PATH}/resource_packs" "${DATA_PATH}/"
 cp -r "${SERVER_PATH}/behavior_packs" "${DATA_PATH}/"
 
-# CREATE SOME FILES IF THEY DO NOT EXIST
-if ! [ -f "${DATA_PATH}/invalid_known_packs.json" ]; then
-    echo "[]" > "${DATA_PATH}/invalid_known_packs.json"
-fi
-
-if ! [ -f "${DATA_PATH}/valid_known_packs.json" ]; then
-    echo "[]" > "${DATA_PATH}/valid_known_packs.json"
-fi
-
 # COPY CONFIG TEMPLATES IF CONFIGURATION FILES DOES NOT EXIST
 if ! [ -f "${DATA_PATH}/server.properties" ]; then
     cp "${CONFIG_PATH}/server.properties" "${DATA_PATH}/server.properties"
@@ -67,40 +48,49 @@ if ! [ -f "${DATA_PATH}/whitelist.json" ]; then
     cp "${CONFIG_PATH}/whitelist.json" "${DATA_PATH}/whitelist.json"
 fi
 
+if ! [ -f "${DATA_PATH}/invalid_known_packs.json" ]; then
+    cp "${CONFIG_PATH}/invalid_known_packs.json" "${DATA_PATH}/invalid_known_packs.json"
+fi
+
+if ! [ -f "${DATA_PATH}/valid_known_packs.json" ]; then
+    cp "${CONFIG_PATH}/valid_known_packs.json" "${DATA_PATH}/valid_known_packs.json"
+fi
+
 
 
 ###############################################################################
 #
 # Change the server.properties file with parameters from docker container
+# ONLY AT FIRST RUN
 #
-
-# REPLACE SOME CONFIGURATION VALUES WITH DOCKER ENVIRONMNET PARAMETERS
-sed -i -e "s/server-name=Dedicated Server/server-name=$SERVER_NAME/g" "${DATA_PATH}/server.properties"
-sed -i -e "s/gamemode=survival/gamemode=$GAMEMODE/g" "${DATA_PATH}/server.properties"
-sed -i -e "s/difficulty=easy/difficulty=$DIFFICULTY/g" "${DATA_PATH}/server.properties"
-sed -i -e "s/allow-cheats=false/allow-cheats=$ALLOW_CHEATS/g" "${DATA_PATH}/server.properties"
-sed -i -e "s/max-players=10/max-players=$MAX_PLAYERS/g" "${DATA_PATH}/server.properties"
-sed -i -e "s/online-mode=true/online-mode=$ONLINE_MODE/g" "${DATA_PATH}/server.properties"
-sed -i -e "s/white-list=false/white-list=$WHITE_LIST/g" "${DATA_PATH}/server.properties"
-sed -i -e "s/server-port=191E32/server-port=$SERVER_PORTv4/g" "${DATA_PATH}/server.properties"
-sed -i -e "s/server-portv6=19133/server-portv6=$SERVER_PORTv6/g" "${DATA_PATH}/server.properties"
-sed -i -e "s/view-distance=32/view-distance=$VIEW_DISTANCE/g" "${DATA_PATH}/server.properties"
-sed -i -e "s/tick-distance=4/tick-distance=$TICK_DISTANCE/g" "${DATA_PATH}/server.properties"
-sed -i -e "s/player-idle-timeout=30/player-idle-timeout=$PLAYER_IDLE_TIMEOUT/g" "${DATA_PATH}/server.properties"
-sed -i -e "s/max-threads=8/max-threads=$MAX_THREADS/g" "${DATA_PATH}/server.properties"
-sed -i -e "s/level-type=DEFAULT/level-type=$LEVEL_TYPE/g" "${DATA_PATH}/server.properties"
-sed -i -e "s/level-name=level/level-name=$LEVEL_NAME/g" "${DATA_PATH}/server.properties"
-sed -i -e "s/level-seed=/level-seed=$LEVEL_SEED/g" "${DATA_PATH}/server.properties"
-sed -i -e "s/default-player-permission-level=member/default-player-permission-level=$DEFAULT_PLAYER_PERMISSION_LEVEL/g" "${DATA_PATH}/server.properties"
-sed -i -e "s/texturepack-required=false/texturepack-required=$TEXTUREPACK_REQUIRED/g" "${DATA_PATH}/server.properties"
-sed -i -e "s/content-log-file-enabled=false/content-log-file-enabled=$CONTENT_LOG_FILE/g" "${DATA_PATH}/server.properties"
-sed -i -e "s/compression-threshold=1/compression-threshold=$COMPRESSION_THRESHOLD/g" "${DATA_PATH}/server.properties"
-sed -i -e "s/server-authoritative-movement=true/server-authoritative-movement=$SERVER_AUTHORITATIVE_MOVEMENT/g" "${DATA_PATH}/server.properties"
-sed -i -e "s/player-movement-score-threshold=20/player-movement-score-threshold=$PLAYER_MOVEMENT_SCORE_THRESHOLD/g" "${DATA_PATH}/server.properties"
-sed -i -e "s/player-movement-distance-threshold=0.3/player-movement-distance-threshold=$PLAYER_MOVEMENT_DISTANCE_THRESHOLD/g" "${DATA_PATH}/server.properties"
-sed -i -e "s/player-movement-duration-threshold-in-ms=500/player-movement-duration-threshold-in-ms=$PLAYER_MOVEMENT_DURATION_THRESHOLD/g" "${DATA_PATH}/server.properties"
-sed -i -e "s/correct-player-movement=false/correct-player-movement=$CORRECT_PLAYER_MOVEMENT/g" "${DATA_PATH}/server.properties"
-
+if ! [ -f "${DATA_PATH}/first_run_done" ]; then
+    sed -i -e "s/server-name=Dedicated Server/server-name=$SERVER_NAME/g" "${DATA_PATH}/server.properties"
+    sed -i -e "s/gamemode=survival/gamemode=$GAMEMODE/g" "${DATA_PATH}/server.properties"
+    sed -i -e "s/difficulty=easy/difficulty=$DIFFICULTY/g" "${DATA_PATH}/server.properties"
+    sed -i -e "s/allow-cheats=false/allow-cheats=$ALLOW_CHEATS/g" "${DATA_PATH}/server.properties"
+    sed -i -e "s/max-players=10/max-players=$MAX_PLAYERS/g" "${DATA_PATH}/server.properties"
+    sed -i -e "s/online-mode=true/online-mode=$ONLINE_MODE/g" "${DATA_PATH}/server.properties"
+    sed -i -e "s/white-list=false/white-list=$WHITE_LIST/g" "${DATA_PATH}/server.properties"
+    sed -i -e "s/server-port=19132/server-port=$SERVER_PORT/g" "${DATA_PATH}/server.properties"
+    sed -i -e "s/server-portv6=19133/server-portv6=$SERVER_PORTv6/g" "${DATA_PATH}/server.properties"
+    sed -i -e "s/view-distance=32/view-distance=$VIEW_DISTANCE/g" "${DATA_PATH}/server.properties"
+    sed -i -e "s/tick-distance=4/tick-distance=$TICK_DISTANCE/g" "${DATA_PATH}/server.properties"
+    sed -i -e "s/player-idle-timeout=30/player-idle-timeout=$PLAYER_IDLE_TIMEOUT/g" "${DATA_PATH}/server.properties"
+    sed -i -e "s/max-threads=8/max-threads=$MAX_THREADS/g" "${DATA_PATH}/server.properties"
+    sed -i -e "s/level-type=DEFAULT/level-type=$LEVEL_TYPE/g" "${DATA_PATH}/server.properties"
+    sed -i -e "s/level-name=Bedrock level/level-name=$LEVEL_NAME/g" "${DATA_PATH}/server.properties"
+    sed -i -e "s/level-seed=/level-seed=$LEVEL_SEED/g" "${DATA_PATH}/server.properties"
+    sed -i -e "s/default-player-permission-level=member/default-player-permission-level=$DEFAULT_PLAYER_PERMISSION_LEVEL/g" "${DATA_PATH}/server.properties"
+    sed -i -e "s/texturepack-required=false/texturepack-required=$TEXTUREPACK_REQUIRED/g" "${DATA_PATH}/server.properties"
+    sed -i -e "s/content-log-file-enabled=false/content-log-file-enabled=$CONTENT_LOG_FILE/g" "${DATA_PATH}/server.properties"
+    sed -i -e "s/compression-threshold=1/compression-threshold=$COMPRESSION_THRESHOLD/g" "${DATA_PATH}/server.properties"
+    sed -i -e "s/server-authoritative-movement=true/server-authoritative-movement=$SERVER_AUTHORITATIVE_MOVEMENT/g" "${DATA_PATH}/server.properties"
+    sed -i -e "s/player-movement-score-threshold=20/player-movement-score-threshold=$PLAYER_MOVEMENT_SCORE_THRESHOLD/g" "${DATA_PATH}/server.properties"
+    sed -i -e "s/player-movement-distance-threshold=0.3/player-movement-distance-threshold=$PLAYER_MOVEMENT_DISTANCE_THRESHOLD/g" "${DATA_PATH}/server.properties"
+    sed -i -e "s/player-movement-duration-threshold-in-ms=500/player-movement-duration-threshold-in-ms=$PLAYER_MOVEMENT_DURATION_THRESHOLD/g" "${DATA_PATH}/server.properties"
+    sed -i -e "s/correct-player-movement=false/correct-player-movement=$CORRECT_PLAYER_MOVEMENT/g" "${DATA_PATH}/server.properties"
+    touch ${DATA_PATH}/first_run_done
+fi
 
 
 ###############################################################################

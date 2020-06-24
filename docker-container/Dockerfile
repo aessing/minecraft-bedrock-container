@@ -1,51 +1,40 @@
 # =============================================================================
 #                              Andre Essing
 # -----------------------------------------------------------------------------
-# Developer.......: Andre Essing (https://twitter.com/aessing)
-#                                (https://www.linkedin.com/in/aessing/)
+# Developer.......: Andre Essing (https://www.andre-essing.de/)
+#                                (https://github.com/aessing)
 # -----------------------------------------------------------------------------
 # File............: Dockerfile
 # Summary......---: This dockerfile describes a container image for a 
 #                   Minecraft Bedrock Server
-# Part of.........: Minecraft on Docker
-# Date............: 07.05.2020
-# Version.........: 1.1.0
-# OS Version......: Ubuntu Linux
-# Bedrock Version.: 1.14.60.5
-# Note............: This Dockerfile is build from a GitHub Repository of 
-#                   FirzenYogesh (Yogesh S) (https://github.com/FirzenYogesh)
-#                   https://github.com/FirzenYogesh/minecraft-bedrock
+# Part of.........: Minecraft Bedrock Server on Docker
 # -----------------------------------------------------------------------------
 # THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND,
 # EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE IMPLIED
 # WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE.
-# -----------------------------------------------------------------------------
-# Changes:
-# DD.MM.YYYY    Developer       Version     Reason
-# 07.05.2020    Andre Essing    1.0.0       Initial Release
-# 08.05.2020    Andre Essing    1.1.0       Enhanced Options
 # =============================================================================
+
+
 
 ###############################################################################
 #
 # Get the base Linux image
 #
-
-# GRAB LATEST UBUNTU RELEASE
 FROM ubuntu:latest
+ARG ARCH=amd64
 
 
 
 ###############################################################################
 #
-# Set some parameters
+# Set parameters
 #
 
 # SETUP ENVS FOR BEDROCK SERVER
 ENV SERVER_NAME='Dedicated Server'
-ENV SERVER_PORTv4='19132'
+ENV SERVER_PORT='19132'
 ENV SERVER_PORTv6='19133'
-ENV LEVEL_NAME='level'
+ENV LEVEL_NAME='Bedrock level'
 ENV LEVEL_TYPE='DEFAULT'
 ENV LEVEL_SEED=''
 ENV GAMEMODE='survival'
@@ -68,17 +57,17 @@ ENV PLAYER_MOVEMENT_DISTANCE_THRESHOLD='0.3'
 ENV PLAYER_MOVEMENT_DURATION_THRESHOLD='500'
 ENV CORRECT_PLAYER_MOVEMENT='false'
 
-# SETUP SOME PATH ENVS
+# SETUP PATH ENVS
 ENV SERVER_PATH='/srv/bedrock-server'
 ENV CONFIG_PATH='/srv/bedrock-config'
 ENV DATA_PATH='/srv/minecraft'
-ARG INSTALL_URL='https://minecraft.azureedge.net/bin-linux/bedrock-server-1.14.60.5.zip'
+ARG DOWNLOAD_URL='https://www.minecraft.net/en-us/download/server/bedrock'
 
 # TELL THE OS IT IS HEADLESS
 ENV DEBIAN_FRONTEND=noninteractive 
 
-# EXPOSE SOME PORTS
-EXPOSE ${SERVER_PORTv4}/udp
+# EXPOSE PORTS
+EXPOSE ${SERVER_PORT}/udp
 EXPOSE ${SERVER_PORTv6}/udp
 
 # SET MOUNTPOINT
@@ -88,23 +77,23 @@ VOLUME ${DATA_PATH}
 
 ###############################################################################
 #
-# Update Linux and install some necessary packages
+# Update Linux and install necessary packages
 #
 
 # UPDATE LINUX
 RUN apt-get update -y
-RUN apt-get install -y apt-utils
-RUN apt-get dist-upgrade -y
+RUN apt-get install --no-install-recommends -y apt-utils 
+RUN apt-get upgrade -y
 
-# INSTALL SOME PACKAGES
-RUN apt-get install -y unzip curl libcurl4 libssl1.1
+# INSTALL PACKAGES
+RUN apt-get install --no-install-recommends -y unzip curl libcurl4 libssl1.1
 
 # CLEAN UP
 RUN apt autoremove -y
 RUN apt autoclean -y
 
-# INSTALL MINECRAFT BEDROCK SERVER
-RUN curl ${INSTALL_URL} --output ${SERVER_PATH}.zip
+# INSTALL LATEST MINECRAFT BEDROCK SERVER
+RUN curl `curl ${DOWNLOAD_URL} | grep -Eoi '<a [^>]+>' | grep -i bin-linux | grep -Eo 'href="[^\"]+"' | grep -Eo '(http|https)://[a-zA-Z0-9./?=_%:-]*'` --output ${SERVER_PATH}.zip
 RUN unzip ${SERVER_PATH}.zip -d ${SERVER_PATH}
 RUN rm ${SERVER_PATH}.zip
 
@@ -112,13 +101,15 @@ RUN rm ${SERVER_PATH}.zip
 
 ###############################################################################
 #
-# Copy some files
+# Copy files
 #
 
 # COPY MINECRAFT SERVER CONFIG
 COPY server.properties ${CONFIG_PATH}/server.properties
 COPY permissions.json ${CONFIG_PATH}/permissions.json
 COPY whitelist.json ${CONFIG_PATH}/whitelist.json
+COPY invalid_known_packs.json ${CONFIG_PATH}/invalid_known_packs.json
+COPY valid_known_packs.json ${CONFIG_PATH}/valid_known_packs.json
 
 # COPY STARTUP SCRIPT
 COPY startup.sh ${CONFIG_PATH}/startup.sh
