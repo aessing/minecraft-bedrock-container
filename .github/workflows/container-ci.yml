@@ -26,5 +26,5 @@ jobs:
     - name: Check if Docker container is running
       run: |
         sleep 30s
-        if [ "$( docker container inspect -f '{{.State.Status}}' CiTestContainer )" == "running" ]; then exit -1; fi
+        if ! [ "$( docker container inspect -f '{{.State.Status}}' CiTestContainer )" == "running" ]; then exit 1; fi
   
