@@ -105,14 +105,14 @@ RUN rm ${SERVER_PATH}.zip
 #
 
 # COPY MINECRAFT SERVER CONFIG
-COPY server.properties ${CONFIG_PATH}/server.properties
-COPY permissions.json ${CONFIG_PATH}/permissions.json
-COPY whitelist.json ${CONFIG_PATH}/whitelist.json
-COPY invalid_known_packs.json ${CONFIG_PATH}/invalid_known_packs.json
-COPY valid_known_packs.json ${CONFIG_PATH}/valid_known_packs.json
+COPY container-files/server.properties ${CONFIG_PATH}/server.properties
+COPY container-files/permissions.json ${CONFIG_PATH}/permissions.json
+COPY container-files/whitelist.json ${CONFIG_PATH}/whitelist.json
+COPY container-files/invalid_known_packs.json ${CONFIG_PATH}/invalid_known_packs.json
+COPY container-files/valid_known_packs.json ${CONFIG_PATH}/valid_known_packs.json
 
 # COPY STARTUP SCRIPT
-COPY startup.sh ${CONFIG_PATH}/startup.sh
+COPY container-files/startup.sh ${CONFIG_PATH}/startup.sh
 RUN chmod a+x ${CONFIG_PATH}/startup.sh
 
 
