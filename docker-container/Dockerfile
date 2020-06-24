@@ -85,15 +85,15 @@ RUN apt-get update -y
 RUN apt-get install --no-install-recommends -y apt-utils 
 RUN apt-get upgrade -y
 
-# INSTALL PACKAGES
-RUN apt-get install --no-install-recommends -y unzip curl libcurl4 libssl1.1
+# INSTALL PACKAGESc
+RUN apt-get install --no-install-recommends -y unzip curl libcurl4 libssl1.1 ca-certificates
 
 # CLEAN UP
 RUN apt autoremove -y
 RUN apt autoclean -y
 
 # INSTALL LATEST MINECRAFT BEDROCK SERVER
-RUN curl `curl ${DOWNLOAD_URL} | grep -Eoi '<a [^>]+>' | grep -i bin-linux | grep -Eo 'href="[^\"]+"' | grep -Eo '(http|https)://[a-zA-Z0-9./?=_%:-]*'` --output ${SERVER_PATH}.zip
+RUN curl $(curl ${DOWNLOAD_URL} | grep -Eoi '<a [^>]+>' | grep -i bin-linux | grep -Eo 'href="[^\"]+"' | grep -Eo '(http|https)://[a-zA-Z0-9./?=_%:-]*') --output ${SERVER_PATH}.zip
 RUN unzip ${SERVER_PATH}.zip -d ${SERVER_PATH}
 RUN rm ${SERVER_PATH}.zip
 
