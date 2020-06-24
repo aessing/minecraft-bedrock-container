@@ -11,7 +11,7 @@ jobs:
     - uses: actions/checkout@v2
       
     - name: Build the Docker image
-      run: docker build container/ --file Dockerfile --tag minecraft-bedrock-server:ci-build
+      run: docker build ./container --file Dockerfile --tag minecraft-bedrock-server:ci-build
       
     - name:  Run the Docker image
       run: docker run -d -i -t --network=host -e PORTv4=19132 -e PORTv6=19133 -e WORLD='CiTestWorld' --name='CiTestContainer' minecraft-bedrock-server:ci-build
