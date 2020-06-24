@@ -2,8 +2,10 @@ name: Container CI
 
 on:
   push:
-    branches-ignore:
+    branches: 
       - master
+#    branches-ignore:
+#      - master
   pull_request:
     branches: 
       - master
