@@ -1,7 +1,12 @@
 name: Container CI
 
 on:
-  push
+  push:
+    branches-ignore:
+      - master
+  pull_request:
+    branches: 
+      - master
 
 jobs:
   build:
@@ -14,4 +19,10 @@ jobs:
       run: docker build ./container --tag minecraft-bedrock-server:ci-build
       
     - name:  Run the Docker image
-      run: docker run -d -i -t --network=host -e PORTv4=19132 -e PORTv6=19133 -e WORLD='CiTestWorld' --name='CiTestContainer' minecraft-bedrock-server:ci-build
+      run: docker run -d -i -t --rm --restart no --network=host -e PORTv4=19132 -e PORTv6=19133 -e WORLD='CiTestWorld' --name='CiTestContainer' minecraft-bedrock-server:ci-build
+    
+    - name: Check if Docker container is running
+      run: |
+        sleep 30s
+        if [ "$( docker container inspect -f '{{.State.Status}}' CiTestContainer )" == "running" ]; then exit -1; fi
+  
