@@ -9,8 +9,8 @@ on:
       - master
 
 jobs:
-  build:
-    name: Build and test minecraft-bedrock-server container
+  ci_build_container:
+    name: Build and test container
     runs-on: ubuntu-latest
 
     steps:
