@@ -9,5 +9,9 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+      
     - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag minecraft-bedrock-server:CI-$(date +%s)
+      run: docker build container/. --file Dockerfile --tag minecraft-bedrock-server:--name=
+      
+    - name:  Run the Docker image
+      run: docker run -d -i -t --network=host -e PORTv4=19132 -e PORTv6=19133 -e WORLD='CITestWorld' --name='CITestContainer' minecraft-bedrock-server:ci-build
