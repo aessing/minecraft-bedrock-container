@@ -21,8 +21,8 @@ jobs:
     - name:  Run the Docker image
       run: docker run -d -i -t --rm --restart no --network=host -e PORTv4=19132 -e PORTv6=19133 -e WORLD='CiTestWorld' --name='CiTestContainer' minecraft-bedrock-server:ci-build
     
-    - name: Check if Docker container is running
-      run: |
-        sleep 30s
-        if ! [ "$( docker container inspect -f '{{.State.Status}}' CiTestContainer )" == "running" ]; then exit 1; fi
+    - name: Wait a minute for the Docker container to get runnung or fail
+      run: sleep 1m
   
+    - name: Check if Docker container is running
+      run: if ! [ "$( docker container inspect -f '{{.State.Status}}' CiTestContainer )" == "running" ]; then exit 1; fi
