@@ -1,0 +1,34 @@
+name: Bedrock Container Test
+
+on:
+  push:
+    branches-ignore:
+      - master
+  pull_request:
+    branches: 
+      - master
+
+env:
+  IMAGE_NAME: aessing/minecraft-bedrock:latest
+  CONTAINER_NAME: TestContainerWorld
+
+jobs:
+  test_container:
+    name: Build and test container
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+      
+    - name: Build image
+      run: docker build ./container --tag $IMAGE_NAME
+      
+    - name: Run and test the image
+      shell: bash
+      run: docker run -d -i -t --restart=no --name $CONTAINER_NAME $IMAGE_NAME
+   
+    - name: Wait a few seconds
+      run: sleep 30s
+  
+    - name: Check container
+      run: if ! [ "$( docker container inspect -f '{{.State.Status}}' $CONTAINER_NAME )" == "running" ]; then exit 1; fi
