@@ -22,8 +22,7 @@ jobs:
     - name: Test create-BedrockContainer.sh and run the container
       shell: bash
       env:
-        runParams: "--server-name 'GitHub Container CI' --server-port 19132 --server-portv6 19133 --level-name 'Container CI World'"
-        # --level-type 'DEFAULT' --level-seed 'GitHubContainerCISeed' --game-mode 'survival' --difficulty 'easy' --allow-cheats 'false' --max-players 10 --online-mode 'true' --whitelist 'false' --default-player-permission-level 'member' --player-idle-timeout 30  --view-distance 32 --tick-distance 4 --max-threads 8 --texturepack-required 'false' --content-log-file 'false' --compression-threshold 1 --server-authoritative-movement 'true' --player-movement-score-threshold 20 --player-movement-distance-threshold 0.3 --player-movement-duration-threshold 500 --correct-player-movement 'false' --volume '/srv/minecraft'"
+        runParams: "--server-name 'GitHub Container CI' --server-port 19132 --server-portv6 19133 --level-name 'Container CI World' --level-type 'DEFAULT' --level-seed 'GitHubContainerCISeed' --game-mode 'survival' --difficulty 'easy' --allow-cheats 'false' --max-players 10 --online-mode 'true' --whitelist 'false' --default-player-permission-level 'member' --player-idle-timeout 30  --view-distance 32 --tick-distance 4 --max-threads 8 --texturepack-required 'false' --content-log-file 'false' --compression-threshold 1 --server-authoritative-movement 'true' --player-movement-score-threshold 20 --player-movement-distance-threshold '0.3' --player-movement-duration-threshold 500 --correct-player-movement 'false' --volume '/srv/minecraft'"
       run: |
         chmod 777 ./scripts/create-BedrockContainer.sh
         ./scripts/create-BedrockContainer.sh $runParams
