@@ -34,9 +34,9 @@ on_error() {
 #
 usage() {
     echo ""
-    echo "Usage: $0 -s <server-name> -p <server-port> -l <level-name> [-t <level-type>] [-d difficulty>] [...]"
+    echo "Usage: $0 [-v <version number>] [-l]"
     echo "-h | --help ............................: Show this help."
-    echo "-v | --version (required) ..............: Sets the version number that will be used to tag the new container image"
+    echo "-v | --version .........................: Sets the version number that will be used to tag the new container image"
     echo "-l | --latest ..........................: Sets the tag \"latest\" on new container image"
     echo ""
 }
