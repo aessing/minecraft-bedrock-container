@@ -71,7 +71,7 @@ done
 #
 # Build the container from GitHub repository
 #
-docker build https://github.com/aessing/minecraft-bedrock-server.git --tag aessing/minecraft-bedrock
+docker build https://github.com/aessing/minecraft-bedrock-container.git --tag aessing/minecraft-bedrock
 
 ###############################################################################
 #
