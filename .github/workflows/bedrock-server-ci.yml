@@ -26,7 +26,9 @@ jobs:
                    #--level-type "DEFAULT" --level-seed "GitHubContainerCISeed" --game-mode "survival" --difficulty "easy" --allow-cheats "false" --max-players 10 --online-mode "true" --whitelist "false" --default-player-permission-level "member" --player-idle-timeout 30  --view-distance 32 --tick-distance 4 --max-threads 8 --texturepack-required "false" --content-log-file "false" --compression-threshold 1 --server-authoritative-movement "true" --player-movement-score-threshold 20 --player-movement-distance-threshold 0.3 --player-movement-duration-threshold 500 --correct-player-movement "false" --volume "/srv/minecraft"'
       run: |
         chmod 777 ./scripts/create-BedrockContainer.sh
-        ./scripts/create-BedrockContainer.sh $runParams
+        docker run -d -i -t --restart=no aessing/minecraft-bedrock:latest
+      #./scripts/create-BedrockContainer.sh $runParams
+        
     
     - name: Wait a few seconds for the container to get runnung or fail
       run: sleep 30s
