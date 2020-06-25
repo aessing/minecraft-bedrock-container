@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 ---
 name: Feature request
 about: Suggest an idea for this project
@@ -32,25 +31,3 @@ assignees: '@aessing'
 
 ## Additional context
 <!-- Please add any other context or screenshots about the feature request here. -->
-=======
----
-name: Feature request
-about: Suggest an idea for this project
-title: ''
-labels: ''
-assignees: ''
-
----
-
-**Is your feature request related to a problem? Please describe.**
-A clear and concise description of what the problem is. Ex. I'm always frustrated when [...]
-
-**Describe the solution you'd like**
-A clear and concise description of what you want to happen.
-
-**Describe alternatives you've considered**
-A clear and concise description of any alternative solutions or features you've considered.
-
-**Additional context**
-Add any other context or screenshots about the feature request here.
->>>>>>> cfe185215df29208ae2849285bf3b6750b0d5d8a
