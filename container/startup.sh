@@ -5,8 +5,6 @@
 # -----------------------------------------------------------------------------
 # Developer.......: Andre Essing (https://www.andre-essing.de/)
 #                                (https://github.com/aessing)
-#                                (https://twitter.com/aessing)
-#                                (https://www.linkedin.com/in/aessing/)
 # -----------------------------------------------------------------------------
 # File............: startup.sh
 # Summary.........: This shell script prepares the container and startes the 
