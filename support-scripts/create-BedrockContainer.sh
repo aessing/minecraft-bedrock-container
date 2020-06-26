@@ -239,9 +239,6 @@ DOCKER_OPTS="-d -i -t"
 # SET CONTAINER AUTORESTART
 DOCKER_OPTS="$DOCKER_OPTS --restart='always'"
 
-# SET NETWORKING TO HOST FOR OPTIMAL MINECRAFT PERFORMANCE AND COMPATIBILITY
-DOCKER_OPTS="$DOCKER_OPTS --network='host'"
-
 ###############################################################################
 #
 # Set user input parameters for docker run
@@ -268,7 +265,7 @@ fi
 
 if [ "$SERVER_PORT" ]; then
     if [[ $SERVER_PORT =~ ^[0-9]+$ ]] && [[ $SERVER_PORT -ge 1 ]] && [[ $SERVER_PORT -le 65535 ]]; then
-        DOCKER_OPTS="$DOCKER_OPTS -e SERVER_PORT='$SERVER_PORT'"
+        DOCKER_OPTS="$DOCKER_OPTS -p $SERVER_PORT:19132/udp"
     else
         echo ""
         echo "ERROR: --server-port is not a valid number." >&2
@@ -284,7 +281,7 @@ fi
 
 if [ "$SERVER_PORTv6" ]; then
     if [[ $SERVER_PORTv6 =~ ^[0-9]+$ ]] && [[ $SERVER_PORTv6 -ge 1 ]] && [[ $SERVER_PORTv6 -le 65535 ]] && [[ $SERVER_PORTv6 -ne $SERVER_PORT ]]; then
-        DOCKER_OPTS="$DOCKER_OPTS -e SERVER_PORTv6='$SERVER_PORTv6'"
+        DOCKER_OPTS="$DOCKER_OPTS -p $SERVER_PORTv6:19133/udp"
     else
         echo ""
         echo "ERROR: --server-portv6 is not a valid number." >&2
@@ -292,7 +289,7 @@ if [ "$SERVER_PORTv6" ]; then
         exit 1
     fi
 else
-    DOCKER_OPTS="$DOCKER_OPTS -e SERVER_PORTv6='$(echo $SERVER_PORT+1 | bc)'"
+    DOCKER_OPTS="$DOCKER_OPTS -p $(echo $SERVER_PORT+1 | bc):19133/udp"
 fi
 
 if [ "$LEVEL_TYPE" ]; then

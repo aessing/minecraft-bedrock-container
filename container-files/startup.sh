@@ -69,8 +69,6 @@ if ! [ -f "${DATA_PATH}/first_run_done" ]; then
     sed -i -e "s/max-players=10/max-players=$MAX_PLAYERS/g" "${DATA_PATH}/server.properties"
     sed -i -e "s/online-mode=true/online-mode=$ONLINE_MODE/g" "${DATA_PATH}/server.properties"
     sed -i -e "s/white-list=false/white-list=$WHITE_LIST/g" "${DATA_PATH}/server.properties"
-    sed -i -e "s/server-port=19132/server-port=$SERVER_PORT/g" "${DATA_PATH}/server.properties"
-    sed -i -e "s/server-portv6=19133/server-portv6=$SERVER_PORTv6/g" "${DATA_PATH}/server.properties"
     sed -i -e "s/view-distance=32/view-distance=$VIEW_DISTANCE/g" "${DATA_PATH}/server.properties"
     sed -i -e "s/tick-distance=4/tick-distance=$TICK_DISTANCE/g" "${DATA_PATH}/server.properties"
     sed -i -e "s/player-idle-timeout=30/player-idle-timeout=$PLAYER_IDLE_TIMEOUT/g" "${DATA_PATH}/server.properties"
