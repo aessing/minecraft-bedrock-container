@@ -528,9 +528,21 @@ if [ "$CORRECT_PLAYER_MOVEMENT" ]; then
 fi
 
 if [ "$VOLUME" ]; then
-    DOCKER_OPTS="$DOCKER_OPTS -v '$VOLUME/$CONTAINER_NAME:/srv/minecraft'"
+    if [[ "$VOLUME" = /* ]]; then
+        mkdir -p "$VOLUME/$CONTAINER_NAME"
+        DOCKER_OPTS="$DOCKER_OPTS -v '$VOLUME/$CONTAINER_NAME:/srv/minecraft'"
+    else
+        echo ""
+        echo "ERROR: --volume has to be a fully qualified path like '/srv/minecraft'." >&2
+        echo "       Or if you don't specify a path, a docker volume will be used. " >&2
+        usage
+        exit 1
+    fi
 else
-    DOCKER_OPTS="$DOCKER_OPTS -v '/srv/minecraft/$CONTAINER_NAME:/srv/minecraft'"
+    if ! [ "$( docker volume inspect -f '{{ .Name }}' $CONTAINER_NAME 2> /dev/null )" == "$CONTAINER_NAME" ]; then
+        docker volume create $CONTAINER_NAME > /dev/null
+    fi
+    DOCKER_OPTS="$DOCKER_OPTS -v '$CONTAINER_NAME:/srv/minecraft'"
 fi
 
 ###############################################################################
