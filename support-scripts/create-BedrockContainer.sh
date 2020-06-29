@@ -237,7 +237,7 @@ done
 DOCKER_OPTS="-d -i -t"
 
 # SET CONTAINER AUTORESTART
-DOCKER_OPTS="$DOCKER_OPTS --restart='always'"
+DOCKER_OPTS="$DOCKER_OPTS --restart='unless-stopped'"
 
 ###############################################################################
 #
