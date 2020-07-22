@@ -4,19 +4,27 @@ Building a Minecraft Bedrock server into an docker image
 
 More info coming soon. Stay tuned!
 
+## Social Profiles
+
+If you have a question, or you just want to contact me, you can find and follow me on:
+ - [Website](https://www.andre-essing.de)
+ - [GitHub](https://github.com/aessing)
+ - [LinkedIn](https://www.linkedin.com/in/aessing/)
+ - [Twitter](https://twitter.com/aessing)
+
 ---
 
 # General Information
 
 ## Code of conduct
 
-Our [Code of Conduct](CODE_OF_CONDUCT.md) outlines expectations for participation in our communitiy, as well as steps for reporting unacceptable behavior. We are committed to providing a welcoming and inspiring community for all. People violating this code of conduct may be banned from the community.
+My [Code of Conduct](CODE_OF_CONDUCT.md) outlines expectations for participation in the community, as well as steps for reporting unacceptable behavior. I am committed to providing a welcoming and inspiring community for all. People violating this code of conduct may be banned from the community.
 
-For more information, or any additional questions or comments, please contact [codeofconduct@essing.org](mailto:codeofconduct@essing.org)
+For more information, or any additional questions or comments, please contact me at [codeofconduct@essing.org](mailto:codeofconduct@essing.org)
 
 ## Contributor's Guide
 
-In our [Contributor's Guide](CONTRIBUTING.md) you can find some guidance for how to report issues, propose new features, and submit contributions via Pull Requests.
+In my [Contributor's Guide](CONTRIBUTING.md) you can find some guidance for how to report issues, propose new features, and submit contributions via Pull Requests. Please read it, before you start working.
 
 ## License
 
@@ -24,10 +32,10 @@ You can find the license information for this repository in its [license](LICENS
 
 ## Security Policy
 
-We take the security of our software and services seriously, which includes all our repositories. 
-If you believe you have found a security vulnerability in any of our repositories, please report it as described in our [Security Policy](SECURITY.md).
+I take the security of my software and services seriously, which includes all of my repositories. 
+If you believe you have found a security vulnerability in any of my repositories, please report it as described in my [Security Policy](SECURITY.md).
 
-For more information, or any additional questions or comments, please contact [codesec@essing.org](mailto:codesec@essing.org)
+For more information, or any additional questions or comments, please contact me at [codesec@essing.org](mailto:codesec@essing.org)
 
 ---
 

@@ -6,7 +6,7 @@ labels: 'documentation'
 assignees: '@aessing'
 ---
 
-<!-- Please provide a general summary of the issue in the Title above -->
+<!-- Please provide a general summary of the issue in the title above -->
 
 ## URL to the Article
 <!-- Please provide to the document that you report the issue for -->
@@ -15,10 +15,10 @@ assignees: '@aessing'
 <!-- Please provide a more detailed introduction to the issue itself, and why you consider it to be a documentation issue -->
 
 ## Expected Documentation
-<!-- Please tell what you expected to find in our documentation -->
+<!-- Please tell what you expected to find in my documentation -->
 
 ## Actual Documentation
-<!-- Please tell what you found in our documentation -->
+<!-- Please tell what you found in my documentation -->
 
 ## Context
 <!-- How has this issue affected you? What were you trying to accomplish? -->
