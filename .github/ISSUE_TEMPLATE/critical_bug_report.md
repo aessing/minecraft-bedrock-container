@@ -6,16 +6,16 @@ labels: 'bug, critical'
 assignees: '@aessing'
 ---
 
-<!-- Please provide a general summary of the issue in the Title above -->
+<!-- Please provide a general summary of the issue in the title above -->
 
 ## Description
 <!-- Please provide a more detailed introduction to the issue itself, and why you consider it to be a bug -->
 
 ## Expected Behavior
-<!-- Please tell us what should happen -->
+<!-- Please tell me what should happen -->
 
 ## Actual Behavior
-<!-- Please tell us what happens instead -->
+<!-- Please tell me what happens instead -->
 
 ## Context
 <!-- How has this bug affected you? What were you trying to accomplish? -->
