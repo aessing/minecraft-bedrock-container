@@ -6,7 +6,7 @@ labels: 'feature'
 assignees: '@aessing'
 ---
 
-<!-- Please provide a general summary of the issue in the Title above -->
+<!-- Please provide a general summary of the feature request in the title above -->
 
 ## Detailed Description
 <!-- Please provide a detailed description of the change or addition you are proposing -->
@@ -19,15 +19,6 @@ assignees: '@aessing'
 
 ## Describe Alternatives
 <!-- Please provide a clear and concise description of any alternative solutions or features you've considered. -->
-
-## Your Environment
-<!-- Please include as many relevant details about the environment you experienced the bug in -->
-- Version used:
-- Environment name and version (e.g. Chrome 39, node.js 5.4):
-- Operating System and version
-- Desktop or mobile:
-- Hardware used:
-- etc.
 
 ## Additional context
 <!-- Please add any other context or screenshots about the feature request here. -->

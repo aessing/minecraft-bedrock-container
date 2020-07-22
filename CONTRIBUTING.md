@@ -1,14 +1,14 @@
 # Contributor's Guide
 
-Below is our guidance for how to report issues, propose new features, and submit contributions via Pull Requests.
+Below is my guidance for how to report issues, propose new features, and submit contributions via Pull Requests.
 
 ## Before you start, file an issue
 
-Please follow this simple rule to help us stop any unnecessary effort and frustration, so we all can ensure an efficient and effective use of everyone's time - yours, ours, and the time of other community members.
+Please follow this simple rule to help me stop any unnecessary effort and frustration, so we all can ensure an efficient and effective use of everyone's time - yours, mine, and the time of other community members.
 
 > If you have a question, or do you think you have discovered an issue, or would you like to propose a new feature, etc., then find/file an issue before starting work to fix or implement it.
 
-> :exclamation: **For security issues please have a look at our [Security Policy](SECURITY.md)** :exclamation:
+> :exclamation: **For security issues please have a look at my [Security Policy](SECURITY.md)** :exclamation:
 
 ### Search existing issues first
 
@@ -29,16 +29,16 @@ If no existing item describes your issue/feature, great - please file a new issu
 
 Please include as much information as possible in your issue. The more information you provide, the more likely your issue/ask will be understood, accepted, and implemented.
 
-- Do not assume we are experts in setting up your environment and do not assume we are experts in your workflow. Please tell us as much details you can, so we can help you as good as possible!
-- What steps do we need to reproduce the issue? Assume we love to read repro steps. As much detail as you can stand is probably barely enough detail for us.
-- We prefer error message text where possible, or screenshots of errors if the error text cannot be captured.
-- If you intend to implement the fix/feature yourself, please say so! If you do not indicate you want to contribute, we assume that the issue is our to solve.
+- Do not assume I am an expert in setting up your environment and do not assume I am an experts in your workflow. Please tell me as much details you can, so I can help you as good as possible!
+- What steps do I need to reproduce the issue? Assume I love to read repro steps. As much detail as you can stand is probably barely enough detail for me.
+- I prefer error message text where possible, or screenshots of errors if the error text cannot be captured.
+- If you intend to implement the fix/feature yourself, please say so! If you do not indicate you want to contribute, I assume that the issue is mine to solve.
 
 ### Do not post "+1" comments
 
 > Please do not post "+1", "me too", or similar comments - these comments just add noise to an issue.
 
-If you do not have any additional information to add but would like to indicate that you are affected by the issue, upvote the original issue by clicking its :smiley:-button and hitting :+1: (+1) icon. This way we can measure how impactful an issue is.
+If you do not have any additional information to add but would like to indicate that you are affected by the issue, upvote the original issue by clicking its :smiley:-button and hitting :+1: (+1) icon. This way I can measure how impactful an issue is.
 
 ---
 
@@ -46,7 +46,7 @@ If you do not have any additional information to add but would like to indicate 
 
 ### Fork, Clone, Branch and Create your PR
 
-Once you have filed an issue and discussed your proposed feature/fix with a project team member, it is time to start development:
+Once you have filed an issue and discussed your proposed feature/fix with me, it is time to start development:
 
 1. Fork the repo if you have not already
 2. Clone your fork locally
@@ -56,11 +56,11 @@ Once you have filed an issue and discussed your proposed feature/fix with a proj
 
 ### Code Review
 
-When you would like the project team to take a look, (even if the work is not yet fully-complete), mark the Pull Request as 'Ready For Review' so that the team can review your work and provide comments, suggestions, and request changes. We would like to encourage you to use the Pull Request as tool to start a conversation around your ideas and recruit people to help if necessary. It may take several cycles, but the result will be solid, testable, conformant code that is safe for us to merge.
+When you would like me to take a look, (even if the work is not yet fully-complete), mark the Pull Request as 'Ready For Review' so that I can review your work and provide comments, suggestions, and request changes. I would like to encourage you to use the Pull Request as tool to start a conversation around your ideas and recruit people to help if necessary. It may take several cycles, but the result will be solid, testable, conformant code that is safe to merge.
 
 ### Merge
 
-Once your code has been reviewed and approved by the requisite number of project team members, it will be merged. Once merged, your Pull Request will be automatically closed.
+Once your code has been reviewed and approved by me, it will be merged. Once merged, your Pull Request will be automatically closed.
 
 ---
 
