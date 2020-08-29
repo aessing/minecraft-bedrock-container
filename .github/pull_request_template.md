@@ -18,7 +18,7 @@ Before submitting this Pull Request, please make sure: _Put an `x` in the boxes 
 What types of changes does your change introduce? _Put an `x` in the boxes that apply_
 - [ ] New feature (adds functionality)   <!-- If suggesting a new feature or change, please discuss it in an issue first -->
 - [ ] Bugfix (fixes an issue)            <!-- If fixing a bug, there should be an issue describing it with steps to reproduce -->
-- [ ] Security (fixes an security issue) | Please have a look at my [Security Policy](../SECURITY.md) first. <!-- If fixing a security issue, please have a look at our security policy (SECURITY.md) before. -->
+- [ ] Security (fixes an security issue) | Please have a look at my [Security Policy](../SECURITY.md) first.
 - [ ] Code style cleaning or Refactoring (formatting, renaming, restructuring, etc.)
 - [ ] Documentation Update
 - [ ] Other (please describe):
@@ -32,9 +32,7 @@ Does this Pull Request cause existing functionality to not work as expected or e
 <!-- Describe your code changes in detail. Explain the technical solution you have provided and how it supports the project. Also explain why you chose the solution you did and what alternatives you considered, etc...-->
 
 ## How has this been tested?
-<!--- Please describe in detail how you tested your changes. -->
-<!--- Include details of your testing environment, and the tests you ran to -->
-<!--- see how your change affects other areas of the code, etc. -->
+<!--- Please describe in detail how you tested your changes. Include details of your testing environment, and the tests you ran to see how your change affects other areas of the code, etc. -->
 
 ## Deploy Notes
 <!-- Notes regarding deployment of your work. These should note any step, like db migrations, manual work, organizational stuff, etc.-->

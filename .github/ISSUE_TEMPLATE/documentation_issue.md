@@ -1,6 +1,6 @@
 ---
 name: Documentation issue
-about: Report issues in our documentation
+about: Report issues in the documentation
 title: ''
 labels: 'documentation'
 assignees: '@aessing'
@@ -15,10 +15,10 @@ assignees: '@aessing'
 <!-- Please provide a more detailed introduction to the issue itself, and why you consider it to be a documentation issue -->
 
 ## Expected Documentation
-<!-- Please tell what you expected to find in my documentation -->
+<!-- Please tell what you expected to find in the documentation -->
 
 ## Actual Documentation
-<!-- Please tell what you found in my documentation -->
+<!-- Please tell what you found in the documentation -->
 
 ## Context
 <!-- How has this issue affected you? What were you trying to accomplish? -->

@@ -1,14 +1,14 @@
-# Security Policy
+# :detective: Security Policy
 
-I take the security of my software and services seriously, which includes all of my repositories.
+I take the security of my software and services serious, which includes all of my repositories.
 
 If you believe you have found a security vulnerability in any of my repositories, please report it as described below.
 
-## Reporting Security Issues
+## :mega: Reporting Security Issues
 
 __Please do not report security vulnerabilities through public GitHub issues.__
 
-Instead, please report them directly to me via mail at [codesec@essing.org](mailto:codesec@essing.org).
+Instead, please report them directly via mail to me [codesec@essing.org](mailto:codesec@essing.org).
 
 You should receive a response within 24 hours. If for some reason you do not, please follow up via email to ensure I received your original message.
 
@@ -24,5 +24,6 @@ Please include the requested information listed below (as much as you can provid
 
 This information will help me to understand your report more quickly.
 
-## Preferred Languages
+## :white_flag: Preferred Languages
+
 I prefer all communications to be in English.

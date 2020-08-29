@@ -1,12 +1,13 @@
 name: Bedrock Container Test
 
 on:
+  workflow_dispatch:
   push:
     branches-ignore:
-      - master
+      - main
   pull_request:
     branches: 
-      - master
+      - main
 
 env:
   IMAGE_NAME: aessing/minecraft-bedrock:latest
