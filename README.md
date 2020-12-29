@@ -1,3 +1,4 @@
+![Minecraft Bedrock Container Banner](docs/images/banner.jpg)
 # Minecraft Bedrock server in a Docker container
 
 Building a Minecraft Bedrock server into an docker image
