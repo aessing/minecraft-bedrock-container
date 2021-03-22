@@ -1,128 +1,105 @@
 # =============================================================================
-#                              Andre Essing
+# Dockerfile
+# Minecraft Bedrock Server Container
+# https://github.com/aessing/minecraft-bedrock-container
 # -----------------------------------------------------------------------------
 # Developer.......: Andre Essing (https://www.andre-essing.de/)
 #                                (https://github.com/aessing)
-# -----------------------------------------------------------------------------
-# File............: Dockerfile
-# Summary......---: This dockerfile describes a container image for a 
-#                   Minecraft Bedrock Server
-# Part of.........: Minecraft Bedrock Server on Docker
+#                                (https://twitter.com/aessing)
+#                                (https://www.linkedin.com/in/aessing/)
 # -----------------------------------------------------------------------------
 # THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND,
 # EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE IMPLIED
 # WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE.
 # =============================================================================
 
-
-
 ###############################################################################
-#
 # Get the base Linux image
-#
-FROM ubuntu:latest
-ARG ARCH=amd64
-
-
+FROM amd64/ubuntu:latest
 
 ###############################################################################
-#
+# Set some information
+LABEL tag="aessing/minecraft-bedrock" \
+      description="A Minecraft Bedrock server in a Docker container. Your personal Minecraft realm at home." \
+      disclaimer="THE CONTENT OF THIS REPOSITORY IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE CONTENT OF THIS REPOSITORY OR THE USE OR OTHER DEALINGS BY CONTENT OF THIS REPOSITORY." \
+      vendor="Andre Essing" \
+      github-repo="https://github.com/aessing/minecraft-bedrock-container"
+
+###############################################################################
 # Set parameters
-#
-
-# SETUP ENVS FOR BEDROCK SERVER
-ENV SERVER_NAME='Dedicated Server'
-ENV LEVEL_NAME='Bedrock level'
-ENV LEVEL_TYPE='DEFAULT'
-ENV LEVEL_SEED=''
-ENV GAMEMODE='survival'
-ENV DIFFICULTY='easy'
-ENV ALLOW_CHEATS='false'
-ENV MAX_PLAYERS='10'
-ENV ONLINE_MODE='true'
-ENV WHITE_LIST='false'
-ENV DEFAULT_PLAYER_PERMISSION_LEVEL='member'
-ENV PLAYER_IDLE_TIMEOUT='30'
-ENV VIEW_DISTANCE='32'
-ENV TICK_DISTANCE='4'
-ENV MAX_THREADS='8'
-ENV TEXTUREPACK_REQUIRED='false'
-ENV CONTENT_LOG_FILE='false'
-ENV COMPRESSION_THRESHOLD='1'
-ENV SERVER_AUTHORITATIVE_MOVEMENT='true'
-ENV PLAYER_MOVEMENT_SCORE_THRESHOLD='20'
-ENV PLAYER_MOVEMENT_DISTANCE_THRESHOLD='0.3'
-ENV PLAYER_MOVEMENT_DURATION_THRESHOLD='500'
-ENV CORRECT_PLAYER_MOVEMENT='false'
-
-# SETUP PATH ENVS
-ENV SERVER_PATH='/srv/bedrock-server'
-ENV CONFIG_PATH='/srv/bedrock-config'
-ENV DATA_PATH='/srv/minecraft'
+ENV SERVER_NAME='Dedicated Server' \
+    GAMEMODE='survival' \
+    FORCE_GAMEMODE='false' \
+    DIFFICULTY='easy' \
+    ALLOW_CHEATS='false' \
+    MAX_PLAYERS='10' \
+    ONLINE_MODE='true' \
+    WHITE_LIST='false' \
+    SERVER_PORT='19132' \
+    SERVER_PORTv6='19133' \
+    VIEW_DISTANCE='32' \
+    TICK_DISTANCE='4' \
+    PLAYER_IDLE_TIMEOUT='30' \
+    MAX_THREADS='8' \
+    LEVEL_NAME='Bedrock level' \
+    LEVEL_SEED='' \
+    DEFAULT_PLAYER_PERMISSION_LEVEL='member' \
+    TEXTUREPACK_REQUIRED='false' \
+    CONTENT_LOG_FILE='false' \
+    COMPRESSION_THRESHOLD='1' \
+    SERVER_AUTHORITATIVE_MOVEMENT='server-auth' \
+    PLAYER_MOVEMENT_SCORE_THRESHOLD='20' \
+    PLAYER_MOVEMENT_DISTANCE_THRESHOLD='0.3' \
+    PLAYER_MOVEMENT_DURATION_THRESHOLD='500' \
+    CORRECT_PLAYER_MOVEMENT='false' \
+    SERVER_AUTHORITATIVE_BLOCK_BREAKING='false' \
+    LEVEL_TYPE='DEFAULT' \
+    EULA='FALSE' \
+    DEBIAN_FRONTEND='noninteractive' \
+    SERVER_PATH='/srv/bedrock-server' \
+    CONFIG_PATH='/srv/bedrock-config' \
+    DATA_PATH='/srv/minecraft'
 ARG DOWNLOAD_URL='https://www.minecraft.net/en-us/download/server/bedrock'
-
-# TELL THE OS IT IS HEADLESS
-ENV DEBIAN_FRONTEND=noninteractive 
-
-# EXPOSE PORTS
-EXPOSE 19132/udp
-EXPOSE 19133/udp
-
-# SET MOUNTPOINT
+EXPOSE ${SERVER_PORT}/udp \
+       ${SERVER_PORTv6}/udp
 VOLUME ${DATA_PATH}
 
-
+###############################################################################
+# Install Minecraft Bedrock Sevrer and necessary packages
+RUN apt-get update -y \
+    && apt-get install -y --no-install-recommends \
+        ca-certificates \
+        curl \
+        jq \
+        libcurl4 \
+        libssl1.1 \
+        unzip \
+    && rm -rf /var/lib/apt/lists/* \
+    && mkdir -p ${SERVER_PATH} \
+    && mkdir -p ${CONFIG_PATH} \
+    && mkdir -p ${DATA_PATH} \
+    && curl $(curl ${DOWNLOAD_URL} | grep -Eoi '<a [^>]+>' | grep -i bin-linux | grep -Eo 'href="[^\"]+"' | grep -Eo '(http|https)://[a-zA-Z0-9./?=_%:-]*') --output ${SERVER_PATH}.zip \
+    && unzip ${SERVER_PATH}.zip -d ${SERVER_PATH} \
+    && rm ${SERVER_PATH}.zip
 
 ###############################################################################
-#
-# Update Linux and install necessary packages
-#
-
-# UPDATE LINUX
-RUN apt-get update -y
-RUN apt-get install --no-install-recommends -y apt-utils 
-RUN apt-get upgrade -y
-
-# INSTALL PACKAGESc
-RUN apt-get install --no-install-recommends -y unzip curl libcurl4 libssl1.1 ca-certificates
-
-# CLEAN UP
-RUN apt autoremove -y
-RUN apt autoclean -y
-
-# INSTALL LATEST MINECRAFT BEDROCK SERVER
-RUN curl $(curl ${DOWNLOAD_URL} | grep -Eoi '<a [^>]+>' | grep -i bin-linux | grep -Eo 'href="[^\"]+"' | grep -Eo '(http|https)://[a-zA-Z0-9./?=_%:-]*') --output ${SERVER_PATH}.zip
-RUN unzip ${SERVER_PATH}.zip -d ${SERVER_PATH}
-RUN rm ${SERVER_PATH}.zip
-
-
-
-###############################################################################
-#
 # Copy files
-#
-
-# COPY MINECRAFT SERVER CONFIG
-COPY container-files/server.properties ${CONFIG_PATH}/server.properties
-COPY container-files/permissions.json ${CONFIG_PATH}/permissions.json
-COPY container-files/whitelist.json ${CONFIG_PATH}/whitelist.json
-COPY container-files/invalid_known_packs.json ${CONFIG_PATH}/invalid_known_packs.json
-COPY container-files/valid_known_packs.json ${CONFIG_PATH}/valid_known_packs.json
-
-# COPY STARTUP SCRIPT
-COPY container-files/startup.sh ${CONFIG_PATH}/startup.sh
-RUN chmod a+x ${CONFIG_PATH}/startup.sh
-
-
+COPY container-files/* ${CONFIG_PATH}/ 
+RUN chmod a+x ${CONFIG_PATH}/entrypoint.sh
 
 ###############################################################################
-#
+# Run in non-root context
+RUN groupadd -g 1000 -r minecraft \
+    && useradd --no-log-init -g minecraft -r -s /bin/false -u 1000 minecraft \
+    && chown -R minecraft.minecraft ${SERVER_PATH} \
+    && chown -R minecraft.minecraft ${CONFIG_PATH} \
+    && chown -R minecraft.minecraft ${DATA_PATH}
+USER minecraft
+
+###############################################################################
 # Start Bedrock Server
-#
 WORKDIR ${CONFIG_PATH}
-ENTRYPOINT [ "./startup.sh" ]
-
-
+ENTRYPOINT [ "./entrypoint.sh" ]
 
 ###############################################################################
 #EOF
