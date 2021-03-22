@@ -1,4 +1,4 @@
-#! /bin/sh
+#!/bin/bash
 
 # =============================================================================
 # Minecraft Bedrock Server startup script
@@ -36,10 +36,25 @@ if [[ "${EULA^^}" != "TRUE" ]]; then
 fi
 
 ###############################################################################
+# Save and load the server- and level-name
+if ! [ -f "${DATA_PATH}/names" ]; then
+    echo "SERVER_NAME='$SERVER_NAME'" > "${DATA_PATH}/names"
+    echo "LEVEL_NAME='$LEVEL_NAME'" >> "${DATA_PATH}/names"
+else
+    source "${DATA_PATH}/names"
+fi
+
+###############################################################################
 # Prepare the container image for running bedrock server and move important
 # files out of the server directory so it can be stored on the docker server
 
 # CREATE NECESSARY DIRECTORIES
+if ! [ -d "${DATA_PATH}/behavior_packs" ]; then
+    mkdir -p "${DATA_PATH}/behavior_packs"
+fi
+if ! [ -d "${DATA_PATH}/resource_packs" ]; then
+    mkdir -p "${DATA_PATH}/resource_packs"
+fi
 if ! [ -d "${DATA_PATH}/worlds" ]; then
     mkdir -p "${DATA_PATH}/worlds"
 fi
@@ -51,18 +66,20 @@ if ! [ -d "${DATA_PATH}/world_templates" ]; then
 fi
 
 # COPY EXISTING PACKS FROM SERVER INSTALL TO THE DATA PATH
-cp -u -f -r "${SERVER_PATH}/resource_packs" "${DATA_PATH}"
-cp -u -f -r "${SERVER_PATH}/behavior_packs" "${DATA_PATH}"
+if ! [ -f "${CONFIG_PATH}/first_run_done" ]; then
+    cp -u -f -r "${SERVER_PATH}/resource_packs" "${DATA_PATH}"
+    cp -u -f -r "${SERVER_PATH}/behavior_packs" "${DATA_PATH}"
+fi
 
 # COPY CONFIG TEMPLATES IF CONFIGURATION FILES DOES NOT EXIST
 if ! [ -f "${DATA_PATH}/server.properties" ]; then
-    cp "${CONFIG_PATH}/server.properties" "${DATA_PATH}/server.properties"
+    cp "${SERVER_PATH}/server.properties" "${DATA_PATH}/server.properties"
 fi
 if ! [ -f "${DATA_PATH}/permissions.json" ]; then
-    cp "${CONFIG_PATH}/permissions.json" "${DATA_PATH}/permissions.json"
+    cp "${SERVER_PATH}/permissions.json" "${DATA_PATH}/permissions.json"
 fi
 if ! [ -f "${DATA_PATH}/whitelist.json" ]; then
-    cp "${CONFIG_PATH}/whitelist.json" "${DATA_PATH}/whitelist.json"
+    cp "${SERVER_PATH}/whitelist.json" "${DATA_PATH}/whitelist.json"
 fi
 if ! [ -f "${DATA_PATH}/invalid_known_packs.json" ]; then
     cp "${CONFIG_PATH}/invalid_known_packs.json" "${DATA_PATH}/invalid_known_packs.json"
@@ -72,55 +89,83 @@ if ! [ -f "${DATA_PATH}/valid_known_packs.json" ]; then
 fi
 
 ###############################################################################
-# Change the server.properties file with parameters from docker container
-# Server- and level-name will only be set on first run of the container
-if ! [ -f "${DATA_PATH}/first_run_done" ]; then
-    sed -i -e "s/server-name=.*/server-name=$SERVER_NAME/g" "${DATA_PATH}/server.properties"
-    sed -i -e "s/level-name=.*/level-name=$LEVEL_NAME/g" "${DATA_PATH}/server.properties"
-    touch ${DATA_PATH}/first_run_done
+# Link custom path folders and files into the server directory
+if ! [ -f "${CONFIG_PATH}/first_run_done" ]; then
+    cp -f "${SERVER_PATH}/server.properties" "${DATA_PATH}/server.properties.mojang"
+    rm -rf "${SERVER_PATH}/worlds" && ln -s "${DATA_PATH}/worlds" "${SERVER_PATH}/worlds"
+    rm -rf "${SERVER_PATH}/resource_packs" && ln -s "${DATA_PATH}/resource_packs" "${SERVER_PATH}/resource_packs"
+    rm -rf "${SERVER_PATH}/behavior_packs" && ln -s "${DATA_PATH}/behavior_packs" "${SERVER_PATH}/behavior_packs"
+    rm -rf "${SERVER_PATH}/premium_cache" && ln -s "${DATA_PATH}/premium_cache" "${SERVER_PATH}/premium_cache"
+    rm -rf "${SERVER_PATH}/world_templates" && ln -s "${DATA_PATH}/world_templates" "${SERVER_PATH}/world_templates"
+    rm -f "${SERVER_PATH}/server.properties" && ln -s "${DATA_PATH}/server.properties" "${SERVER_PATH}/server.properties"
+    rm -f "${SERVER_PATH}/permissions.json" && ln -s "${DATA_PATH}/permissions.json" "${SERVER_PATH}/permissions.json"
+    rm -f "${SERVER_PATH}/whitelist.json" && ln -s "${DATA_PATH}/whitelist.json" "${SERVER_PATH}/whitelist.json"
+    rm -f "${SERVER_PATH}/valid_known_packs.json" && ln -s "${DATA_PATH}/valid_known_packs.json" "${SERVER_PATH}/valid_known_packs.json"
+    rm -f "${SERVER_PATH}/invalid_known_packs.json" && ln -s "${DATA_PATH}/invalid_known_packs.json" "${SERVER_PATH}/invalid_known_packs.json"
+    date > ${CONFIG_PATH}/first_run_done
 fi
-sed -i -e "s/gamemode=.*/gamemode=$GAMEMODE/g" "${DATA_PATH}/server.properties"
-sed -i -e "s/difficulty=.*/difficulty=$DIFFICULTY/g" "${DATA_PATH}/server.properties"
-sed -i -e "s/allow-cheats=.*/allow-cheats=$ALLOW_CHEATS/g" "${DATA_PATH}/server.properties"
-sed -i -e "s/max-players=.*/max-players=$MAX_PLAYERS/g" "${DATA_PATH}/server.properties"
-sed -i -e "s/online-mode=.*/online-mode=$ONLINE_MODE/g" "${DATA_PATH}/server.properties"
-sed -i -e "s/white-list=.*/white-list=$WHITE_LIST/g" "${DATA_PATH}/server.properties"
-sed -i -e "s/server-port=.*/server-port=$SERVER_PORT/g" "${DATA_PATH}/server.properties"
-sed -i -e "s/server-portv6=.*/server-portv6=$SERVER_PORTv6/g" "${DATA_PATH}/server.properties"
-sed -i -e "s/view-distance=.*/view-distance=$VIEW_DISTANCE/g" "${DATA_PATH}/server.properties"
-sed -i -e "s/tick-distance=.*/tick-distance=$TICK_DISTANCE/g" "${DATA_PATH}/server.properties"
-sed -i -e "s/player-idle-timeout=.*/player-idle-timeout=$PLAYER_IDLE_TIMEOUT/g" "${DATA_PATH}/server.properties"
-sed -i -e "s/max-threads=.*/max-threads=$MAX_THREADS/g" "${DATA_PATH}/server.properties"
-sed -i -e "s/level-type=.*/level-type=$LEVEL_TYPE/g" "${DATA_PATH}/server.properties"
-sed -i -e "s/level-seed=.*/level-seed=$LEVEL_SEED/g" "${DATA_PATH}/server.properties"
-sed -i -e "s/default-player-permission-level=.*/default-player-permission-level=$DEFAULT_PLAYER_PERMISSION_LEVEL/g" "${DATA_PATH}/server.properties"
-sed -i -e "s/texturepack-required=.*/texturepack-required=$TEXTUREPACK_REQUIRED/g" "${DATA_PATH}/server.properties"
-sed -i -e "s/content-log-file-enabled=.*/content-log-file-enabled=$CONTENT_LOG_FILE/g" "${DATA_PATH}/server.properties"
-sed -i -e "s/compression-threshold=.*/compression-threshold=$COMPRESSION_THRESHOLD/g" "${DATA_PATH}/server.properties"
-sed -i -e "s/server-authoritative-movement=.*/server-authoritative-movement=$SERVER_AUTHORITATIVE_MOVEMENT/g" "${DATA_PATH}/server.properties"
-sed -i -e "s/player-movement-score-threshold=.*/player-movement-score-threshold=$PLAYER_MOVEMENT_SCORE_THRESHOLD/g" "${DATA_PATH}/server.properties"
-sed -i -e "s/player-movement-distance-threshold=.*/player-movement-distance-threshold=$PLAYER_MOVEMENT_DISTANCE_THRESHOLD/g" "${DATA_PATH}/server.properties"
-sed -i -e "s/player-movement-duration-threshold-in-ms=.*/player-movement-duration-threshold-in-ms=$PLAYER_MOVEMENT_DURATION_THRESHOLD/g" "${DATA_PATH}/server.properties"
-sed -i -e "s/correct-player-movement=.*/correct-player-movement=$CORRECT_PLAYER_MOVEMENT/g" "${DATA_PATH}/server.properties"
 
 ###############################################################################
-# Link custom path folders and files into the server directory
-rm -rf "${SERVER_PATH}/worlds" && ln -s "${DATA_PATH}/worlds" "${SERVER_PATH}/worlds"
-rm -rf "${SERVER_PATH}/resource_packs" && ln -s "${DATA_PATH}/resource_packs" "${SERVER_PATH}/resource_packs"
-rm -rf "${SERVER_PATH}/behavior_packs" && ln -s "${DATA_PATH}/behavior_packs" "${SERVER_PATH}/behavior_packs"
-rm -rf "${SERVER_PATH}/premium_cache" && ln -s "${DATA_PATH}/premium_cache" "${SERVER_PATH}/premium_cache"
-rm -rf "${SERVER_PATH}/world_templates" && ln -s "${DATA_PATH}/world_templates" "${SERVER_PATH}/world_templates"
-rm -f "${SERVER_PATH}/server.properties" && ln -s "${DATA_PATH}/server.properties" "${SERVER_PATH}/server.properties"
-rm -f "${SERVER_PATH}/permissions.json" && ln -s "${DATA_PATH}/permissions.json" "${SERVER_PATH}/permissions.json"
-rm -f "${SERVER_PATH}/whitelist.json" && ln -s "${DATA_PATH}/whitelist.json" "${SERVER_PATH}/whitelist.json"
-rm -f "${SERVER_PATH}/valid_known_packs.json" && ln -s "${DATA_PATH}/valid_known_packs.json" "${SERVER_PATH}/valid_known_packs.json"
-rm -f "${SERVER_PATH}/invalid_known_packs.json" && ln -s "${DATA_PATH}/invalid_known_packs.json" "${SERVER_PATH}/invalid_known_packs.json"
+# Change the server.properties file with parameters from docker container
+# Server- and level-name will only be set on first run of the container
+cat > "${DATA_PATH}/server.properties" <<EOL
+server-name=$SERVER_NAME
+level-name=$LEVEL_NAME
+gamemode=$GAMEMODE
+force-gamemode=$FORCE_GAMEMODE
+difficulty=$DIFFICULTY
+allow-cheats=$ALLOW_CHEATS
+max-players=$MAX_PLAYERS
+online-mode=$ONLINE_MODE
+white-list=$WHITE_LIST
+server-port=$SERVER_PORT
+server-portv6=$SERVER_PORTv6
+view-distance=$VIEW_DISTANCE
+tick-distance=$TICK_DISTANCE
+player-idle-timeout=$PLAYER_IDLE_TIMEOUT
+max-threads=$MAX_THREADS
+level-seed=$LEVEL_SEED
+default-player-permission-level=$DEFAULT_PLAYER_PERMISSION_LEVEL
+texturepack-required=$TEXTUREPACK_REQUIRED
+content-log-file-enabled=$CONTENT_LOG_FILE
+compression-threshold=$COMPRESSION_THRESHOLD
+server-authoritative-movement=$SERVER_AUTHORITATIVE_MOVEMENT
+player-movement-score-threshold=$PLAYER_MOVEMENT_SCORE_THRESHOLD
+player-movement-distance-threshold=$PLAYER_MOVEMENT_DISTANCE_THRESHOLD
+player-movement-duration-threshold-in-ms=$PLAYER_MOVEMENT_DURATION_THRESHOLD
+correct-player-movement=$CORRECT_PLAYER_MOVEMENT
+server-authoritative-block-breaking=$SERVER_AUTHORITATIVE_BLOCK_BREAKING
+level-type=$LEVEL_TYPE
+EOL
+
+###############################################################################
+# Build permissions and whitelist files
+if [ -n "$OPS" ] || [ -n "$MEMBERS" ] || [ -n "$VISITORS" ]; then
+    jq -n --arg ops "$OPS" --arg members "$MEMBERS" --arg visitors "$VISITORS" '[
+            [$ops      | split(",") | map({permission: "operator", xuid:.})],
+            [$members  | split(",") | map({permission: "member", xuid:.})],
+            [$visitors | split(",") | map({permission: "visitor", xuid:.})]
+        ] | flatten' > "${DATA_PATH}/permissions.json"
+fi
+if [ -n "$USER" ]; then
+    jq -n --arg users "$USER" '[
+            [$users | split(",") | map({"name":.})]
+        ] | flatten' > "${DATA_PATH}/whitelist.json"
+    export WHITE_LIST=true
+fi
+
+###############################################################################
+# Set status files that first configuration is done
+if ! [ -f "${CONFIG_PATH}/first_run_done" ]; then
+    date > ${CONFIG_PATH}/first_run_done
+fi
 
 ###############################################################################
 # Get the party started and run Bedrock server
 echo "Starting server: ${WORLD} on ${HOSTNAME}..."
 cd ${SERVER_PATH}
-LD_LIBRARY_PATH=. ./bedrock_server
+export LD_LIBRARY_PATH=.
+exec ./bedrock_server
 
 ###############################################################################
 #EOF

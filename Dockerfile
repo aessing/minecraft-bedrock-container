@@ -28,10 +28,8 @@ LABEL tag="aessing/minecraft-bedrock" \
 ###############################################################################
 # Set parameters
 ENV SERVER_NAME='Dedicated Server' \
-    LEVEL_NAME='Bedrock level' \
-    LEVEL_TYPE='DEFAULT' \
-    LEVEL_SEED='' \
     GAMEMODE='survival' \
+    FORCE_GAMEMODE='false' \
     DIFFICULTY='easy' \
     ALLOW_CHEATS='false' \
     MAX_PLAYERS='10' \
@@ -39,19 +37,23 @@ ENV SERVER_NAME='Dedicated Server' \
     WHITE_LIST='false' \
     SERVER_PORT='19132' \
     SERVER_PORTv6='19133' \
-    DEFAULT_PLAYER_PERMISSION_LEVEL='member' \
-    PLAYER_IDLE_TIMEOUT='30' \
     VIEW_DISTANCE='32' \
     TICK_DISTANCE='4' \
+    PLAYER_IDLE_TIMEOUT='30' \
     MAX_THREADS='8' \
+    LEVEL_NAME='Bedrock level' \
+    LEVEL_SEED='' \
+    DEFAULT_PLAYER_PERMISSION_LEVEL='member' \
     TEXTUREPACK_REQUIRED='false' \
     CONTENT_LOG_FILE='false' \
     COMPRESSION_THRESHOLD='1' \
-    SERVER_AUTHORITATIVE_MOVEMENT='true' \
+    SERVER_AUTHORITATIVE_MOVEMENT='server-auth' \
     PLAYER_MOVEMENT_SCORE_THRESHOLD='20' \
     PLAYER_MOVEMENT_DISTANCE_THRESHOLD='0.3' \
     PLAYER_MOVEMENT_DURATION_THRESHOLD='500' \
     CORRECT_PLAYER_MOVEMENT='false' \
+    SERVER_AUTHORITATIVE_BLOCK_BREAKING='false' \
+    LEVEL_TYPE='DEFAULT' \
     EULA='FALSE' \
     DEBIAN_FRONTEND='noninteractive' \
     SERVER_PATH='/srv/bedrock-server' \
@@ -69,8 +71,8 @@ RUN apt-get update -y \
         ca-certificates \
         curl \
         jq \
-        libcurl \
-        libssl \
+        libcurl4 \
+        libssl1.1 \
         unzip \
     && rm -rf /var/lib/apt/lists/* \
     && mkdir -p ${SERVER_PATH} \
@@ -88,7 +90,7 @@ RUN chmod a+x ${CONFIG_PATH}/entrypoint.sh
 ###############################################################################
 # Run in non-root context
 RUN groupadd -g 1000 -r minecraft \
-    && adduser --no-log-init -G minecraft -r -s /bin/false -u 1000 minecraft \
+    && useradd --no-log-init -g minecraft -r -s /bin/false -u 1000 minecraft \
     && chown -R minecraft.minecraft ${SERVER_PATH} \
     && chown -R minecraft.minecraft ${CONFIG_PATH} \
     && chown -R minecraft.minecraft ${DATA_PATH}
