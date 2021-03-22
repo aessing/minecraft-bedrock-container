@@ -2,15 +2,9 @@ name: Container Build Test
 
 on:
   workflow_dispatch:
-  push:
-    branches-ignore:
-      - main
   pull_request:
     branches: 
       - main
-
-env:
-  CONTAINER_NAME: TestContainerWorld
 
 jobs:
   build:
