@@ -140,15 +140,15 @@ EOL
 
 ###############################################################################
 # Build permissions and whitelist files
-if [ -n "$OPS" ] || [ -n "$MEMBERS" ] || [ -n "$VISITORS" ]; then
-    jq -n --arg ops "$OPS" --arg members "$MEMBERS" --arg visitors "$VISITORS" '[
+if [ -n "$PERMISSION_OPS_XUIDS" ] || [ -n "$PERMISSION_MEMBERS_XUIDS" ] || [ -n "$PERMISSION_VISITORS_XUIDS" ]; then
+    jq -n --arg ops "$PERMISSION_OPS_XUIDS" --arg members "$PERMISSION_MEMBERS_XUIDS" --arg visitors "$PERMISSION_VISITORS_XUIDS" '[
             [$ops      | split(",") | map({permission: "operator", xuid:.})],
             [$members  | split(",") | map({permission: "member", xuid:.})],
             [$visitors | split(",") | map({permission: "visitor", xuid:.})]
         ] | flatten' > "${DATA_PATH}/permissions.json"
 fi
-if [ -n "$USER" ]; then
-    jq -n --arg users "$USER" '[
+if [ -n "$ALLOWED_USER_GAMERTAGS" ]; then
+    jq -n --arg users "$ALLOWED_USER_GAMERTAGS" '[
             [$users | split(",") | map({"name":.})]
         ] | flatten' > "${DATA_PATH}/whitelist.json"
     export WHITE_LIST=true
