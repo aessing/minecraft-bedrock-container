@@ -89,8 +89,8 @@ RUN chmod a+x ${CONFIG_PATH}/entrypoint.sh
 
 ###############################################################################
 # Run in non-root context
-RUN groupadd -g 1000 -r minecraft \
-    && useradd --no-log-init -g minecraft -r -s /bin/false -u 1000 minecraft \
+RUN groupadd -g 10999 -r minecraft \
+    && useradd --no-log-init -g minecraft -r -s /bin/false -u 10999 minecraft \
     && chown -R minecraft.minecraft ${SERVER_PATH} \
     && chown -R minecraft.minecraft ${CONFIG_PATH} \
     && chown -R minecraft.minecraft ${DATA_PATH}
