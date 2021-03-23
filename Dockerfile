@@ -59,7 +59,8 @@ ENV SERVER_NAME='Dedicated Server' \
     SERVER_PATH='/srv/bedrock-server' \
     CONFIG_PATH='/srv/bedrock-config' \
     DATA_PATH='/srv/minecraft'
-ARG DOWNLOAD_URL='https://www.minecraft.net/en-us/download/server/bedrock'
+ARG DOWNLOAD_URL='https://www.minecraft.net/en-us/download/server/bedrock' \
+    UIDGID='10999'
 EXPOSE ${SERVER_PORT}/udp \
        ${SERVER_PORTv6}/udp
 VOLUME ${DATA_PATH}
@@ -89,12 +90,12 @@ RUN chmod a+x ${CONFIG_PATH}/entrypoint.sh
 
 ###############################################################################
 # Run in non-root context
-RUN groupadd -g 10999 -r minecraft \
-    && useradd --no-log-init -g minecraft -r -s /bin/false -u 10999 minecraft \
-    && chown -R minecraft.minecraft ${SERVER_PATH} \
-    && chown -R minecraft.minecraft ${CONFIG_PATH} \
-    && chown -R minecraft.minecraft ${DATA_PATH}
-USER minecraft
+RUN groupadd -g ${UIDGID} -r ${UIDGID} \
+    && useradd --no-log-init -g ${UIDGID} -r -s /bin/false -u ${UIDGID} ${UIDGID} \
+    && chown -R ${UIDGID}.${UIDGID} ${SERVER_PATH} \
+    && chown -R ${UIDGID}.${UIDGID} ${CONFIG_PATH} \
+    && chown -R ${UIDGID}.${UIDGID} ${DATA_PATH}
+USER ${UIDGID}
 
 ###############################################################################
 # Start Bedrock Server
