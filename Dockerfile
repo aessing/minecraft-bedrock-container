@@ -81,6 +81,7 @@ RUN apt-get update -y \
     && mkdir -p ${DATA_PATH} \
     && curl $(curl ${DOWNLOAD_URL} | grep -Eoi '<a [^>]+>' | grep -i bin-linux | grep -Eo 'href="[^\"]+"' | grep -Eo '(http|https)://[a-zA-Z0-9./?=_%:-]*') --output ${SERVER_PATH}.zip \
     && unzip ${SERVER_PATH}.zip -d ${SERVER_PATH} \
+    && chmod 755 ${SERVER_PATH}/bedrock_server \
     && rm ${SERVER_PATH}.zip
 
 ###############################################################################
