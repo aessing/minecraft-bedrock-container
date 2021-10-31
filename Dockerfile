@@ -60,7 +60,8 @@ ENV SERVER_NAME='Dedicated Server' \
     CONFIG_PATH='/srv/bedrock-config' \
     DATA_PATH='/srv/minecraft'
 ARG DOWNLOAD_URL='https://www.minecraft.net/en-us/download/server/bedrock' \
-    UIDGID='10999'
+    UIDGID='10999' \
+    USERGROUPNAME='minecraft'
 EXPOSE ${SERVER_PORT}/udp \
        ${SERVER_PORTv6}/udp
 VOLUME ${DATA_PATH}
@@ -75,6 +76,9 @@ RUN apt-get update -y \
         libcurl4 \
         libssl1.1 \
         unzip \
+    && apt-get dist-upgrade -y \
+    && apt-get autoremove -y \
+    && apt-get autoclean -y \
     && rm -rf /var/lib/apt/lists/* \
     && mkdir -p ${SERVER_PATH} \
     && mkdir -p ${CONFIG_PATH} \
@@ -91,12 +95,12 @@ RUN chmod a+x ${CONFIG_PATH}/entrypoint.sh
 
 ###############################################################################
 # Run in non-root context
-RUN groupadd -g ${UIDGID} -r ${UIDGID} \
-    && useradd --no-log-init -g ${UIDGID} -r -s /bin/false -u ${UIDGID} ${UIDGID} \
-    && chown -R ${UIDGID}.${UIDGID} ${SERVER_PATH} \
-    && chown -R ${UIDGID}.${UIDGID} ${CONFIG_PATH} \
-    && chown -R ${UIDGID}.${UIDGID} ${DATA_PATH}
-USER ${UIDGID}
+RUN groupadd -g ${UIDGID} -r ${USERGROUPNAME} \
+    && useradd --no-log-init -g ${USERGROUPNAME} -r -s /bin/false -u ${UIDGID} ${USERGROUPNAME} \
+    && chown -R ${USERGROUPNAME}.${USERGROUPNAME} ${SERVER_PATH} \
+    && chown -R ${USERGROUPNAME}.${USERGROUPNAME} ${CONFIG_PATH} \
+    && chown -R ${USERGROUPNAME}.${USERGROUPNAME} ${DATA_PATH}
+USER ${USERGROUPNAME}
 
 ###############################################################################
 # Start Bedrock Server
