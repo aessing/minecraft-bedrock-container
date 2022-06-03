@@ -36,8 +36,41 @@ if [[ "${EULA^^}" != "TRUE" ]]; then
 fi
 
 ###############################################################################
+# Install Minecraft if not exists
+echo ""
+echo ""
+echo "# ============================================================================="
+echo "# Minecraft Bedrock Server startup script"
+echo "# $(cat /etc/redhat-release)"
+echo "# -----------------------------------------------------------------------------"
+echo "# Developer.......: Andre Essing (https://www.andre-essing.de/)"
+echo "#                                (https://github.com/aessing)"
+echo "#                                (https://twitter.com/aessing)"
+echo "#                                (https://www.linkedin.com/in/aessing/)"
+echo "# -----------------------------------------------------------------------------"
+echo "# THIS CODE AND INFORMATION ARE PROVIDED \"AS IS\" WITHOUT WARRANTY OF ANY KIND,"
+echo "# EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE IMPLIED"
+echo "# WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE."
+echo "# ============================================================================="
+echo ""
+
+
+###############################################################################
+# Install Minecraft if not exists
+if ! [ -f "${SERVER_PATH}/bedrock_server" ]; then
+    echo ""
+    echo "- Installing Minecraft Bedrock Server from ${DOWNLOAD_URL}"
+    curl $(curl --user-agent "aessing/minecraft-bedrock-container" --header "accept-language:*" "${DOWNLOAD_URL}" | grep -Eoi '<a [^>]+>' | grep -i bin-linux | grep -Eo 'href="[^\"]+"' | grep -Eo '(http|https)://[a-zA-Z0-9./?=_%:-]*') --output /tmp/bedrock.zip
+    unzip /tmp/bedrock.zip -d ${SERVER_PATH}
+    chmod 755 ${SERVER_PATH}/bedrock_server
+    rm /tmp/bedrock.zip
+fi
+
+###############################################################################
 # Save and load the server- and level-name
 if ! [ -f "${DATA_PATH}/names" ]; then
+    echo ""
+    echo "- Save and load the server- and level-name"
     echo "SERVER_NAME='$SERVER_NAME'" > "${DATA_PATH}/names"
     echo "LEVEL_NAME='$LEVEL_NAME'" >> "${DATA_PATH}/names"
 else
@@ -49,6 +82,8 @@ fi
 # files out of the server directory so it can be stored on the docker server
 
 # CREATE NECESSARY DIRECTORIES
+echo ""
+echo "- Creating necessary directories if directories don't exist"
 if ! [ -d "${DATA_PATH}/behavior_packs" ]; then
     mkdir -p "${DATA_PATH}/behavior_packs"
 fi
@@ -67,31 +102,37 @@ fi
 
 # COPY EXISTING PACKS FROM SERVER INSTALL TO THE DATA PATH
 if ! [ -f "${CONFIG_PATH}/first_run_done" ]; then
+    echo ""
+    echo "- Copy / updating existing packs from server install to data path"
     cp -u -f -r "${SERVER_PATH}/resource_packs" "${DATA_PATH}"
     cp -u -f -r "${SERVER_PATH}/behavior_packs" "${DATA_PATH}"
 fi
 
 # COPY CONFIG TEMPLATES IF CONFIGURATION FILES DOES NOT EXIST
+echo ""
+echo "- Copy config templates if configuration files does not exist"
 if ! [ -f "${DATA_PATH}/server.properties" ]; then
     cp "${SERVER_PATH}/server.properties" "${DATA_PATH}/server.properties"
 fi
 if ! [ -f "${DATA_PATH}/permissions.json" ]; then
-    cp "${SERVER_PATH}/permissions.json" "${DATA_PATH}/permissions.json"
+    echo "[]" > "${DATA_PATH}/permissions.json"
 fi
-if ! [ -f "${DATA_PATH}/whitelist.json" ]; then
-    cp "${SERVER_PATH}/whitelist.json" "${DATA_PATH}/whitelist.json"
+if ! [ -f "${DATA_PATH}/allowlist.json" ]; then
+    echo "[]" > "${DATA_PATH}/allowlist.json"
 fi
 if ! [ -f "${DATA_PATH}/invalid_known_packs.json" ]; then
-    cp "${CONFIG_PATH}/invalid_known_packs.json" "${DATA_PATH}/invalid_known_packs.json"
+    echo "[]" > "${DATA_PATH}/invalid_known_packs.json"
 fi
 if ! [ -f "${DATA_PATH}/valid_known_packs.json" ]; then
-    cp "${CONFIG_PATH}/valid_known_packs.json" "${DATA_PATH}/valid_known_packs.json"
+    echo "[]" > "${DATA_PATH}/valid_known_packs.json"
 fi
 
 ###############################################################################
 # Link custom path folders and files into the server directory
 if ! [ -f "${CONFIG_PATH}/first_run_done" ]; then
-    cp -f "${SERVER_PATH}/server.properties" "${DATA_PATH}/server.properties.mojang"
+    echo ""
+    echo "- Link custom path folders and files into the server directory"
+    rm -rf "${DATA_PATH}/server.properties.mojang" && cp -f "${SERVER_PATH}/server.properties" "${DATA_PATH}/server.properties.mojang"
     rm -rf "${SERVER_PATH}/worlds" && ln -s "${DATA_PATH}/worlds" "${SERVER_PATH}/worlds"
     rm -rf "${SERVER_PATH}/resource_packs" && ln -s "${DATA_PATH}/resource_packs" "${SERVER_PATH}/resource_packs"
     rm -rf "${SERVER_PATH}/behavior_packs" && ln -s "${DATA_PATH}/behavior_packs" "${SERVER_PATH}/behavior_packs"
@@ -99,15 +140,16 @@ if ! [ -f "${CONFIG_PATH}/first_run_done" ]; then
     rm -rf "${SERVER_PATH}/world_templates" && ln -s "${DATA_PATH}/world_templates" "${SERVER_PATH}/world_templates"
     rm -f "${SERVER_PATH}/server.properties" && ln -s "${DATA_PATH}/server.properties" "${SERVER_PATH}/server.properties"
     rm -f "${SERVER_PATH}/permissions.json" && ln -s "${DATA_PATH}/permissions.json" "${SERVER_PATH}/permissions.json"
-    rm -f "${SERVER_PATH}/whitelist.json" && ln -s "${DATA_PATH}/whitelist.json" "${SERVER_PATH}/whitelist.json"
+    rm -f "${SERVER_PATH}/allowlist.json" && ln -s "${DATA_PATH}/allowlist.json" "${SERVER_PATH}/allowlist.json"
     rm -f "${SERVER_PATH}/valid_known_packs.json" && ln -s "${DATA_PATH}/valid_known_packs.json" "${SERVER_PATH}/valid_known_packs.json"
     rm -f "${SERVER_PATH}/invalid_known_packs.json" && ln -s "${DATA_PATH}/invalid_known_packs.json" "${SERVER_PATH}/invalid_known_packs.json"
-    date > ${CONFIG_PATH}/first_run_done
 fi
 
 ###############################################################################
 # Change the server.properties file with parameters from docker container
 # Server- and level-name will only be set on first run of the container
+echo ""
+echo "- Set settings in server.properties"
 cat > "${DATA_PATH}/server.properties" <<EOL
 server-name=$SERVER_NAME
 level-name=$LEVEL_NAME
@@ -117,7 +159,7 @@ difficulty=$DIFFICULTY
 allow-cheats=$ALLOW_CHEATS
 max-players=$MAX_PLAYERS
 online-mode=$ONLINE_MODE
-white-list=$WHITE_LIST
+white-list=$ALLOW_LIST
 server-port=$SERVER_PORT
 server-portv6=$SERVER_PORTv6
 view-distance=$VIEW_DISTANCE
@@ -136,11 +178,14 @@ player-movement-duration-threshold-in-ms=$PLAYER_MOVEMENT_DURATION_THRESHOLD
 correct-player-movement=$CORRECT_PLAYER_MOVEMENT
 server-authoritative-block-breaking=$SERVER_AUTHORITATIVE_BLOCK_BREAKING
 level-type=$LEVEL_TYPE
+emit-server-telemetry=$EMIT_SERVER_TELEMETRY
 EOL
 
 ###############################################################################
-# Build permissions and whitelist files
+# Build permissions and allowlist files
 if [ -n "$PERMISSION_OPS_XUIDS" ] || [ -n "$PERMISSION_MEMBERS_XUIDS" ] || [ -n "$PERMISSION_VISITORS_XUIDS" ]; then
+    echo ""
+    echo "- Build permissions files"
     jq -n --arg ops "$PERMISSION_OPS_XUIDS" --arg members "$PERMISSION_MEMBERS_XUIDS" --arg visitors "$PERMISSION_VISITORS_XUIDS" '[
             [$ops      | split(",") | map({permission: "operator", xuid:.})],
             [$members  | split(",") | map({permission: "member", xuid:.})],
@@ -148,21 +193,26 @@ if [ -n "$PERMISSION_OPS_XUIDS" ] || [ -n "$PERMISSION_MEMBERS_XUIDS" ] || [ -n 
         ] | flatten' > "${DATA_PATH}/permissions.json"
 fi
 if [ -n "$ALLOWED_USER_GAMERTAGS" ]; then
+    echo ""
+    echo "- Build allowlist"
     jq -n --arg users "$ALLOWED_USER_GAMERTAGS" '[
             [$users | split(",") | map({"name":.})]
-        ] | flatten' > "${DATA_PATH}/whitelist.json"
-    export WHITE_LIST=true
+        ] | flatten' > "${DATA_PATH}/allowlist.json"
+    export ALLOW_LIST=true
 fi
 
 ###############################################################################
 # Set status files that first configuration is done
 if ! [ -f "${CONFIG_PATH}/first_run_done" ]; then
+    echo ""
+    echo "- Creating status files after first run"
     date > ${CONFIG_PATH}/first_run_done
 fi
 
 ###############################################################################
 # Get the party started and run Bedrock server
-echo "Starting server: ${WORLD} on ${HOSTNAME}..."
+echo ""
+echo "- Starting server: ${WORLD} on ${HOSTNAME}..."
 cd ${SERVER_PATH}
 export LD_LIBRARY_PATH=.
 exec ./bedrock_server

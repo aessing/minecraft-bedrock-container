@@ -15,7 +15,7 @@
 
 ###############################################################################
 # Get the base Linux image
-FROM amd64/ubuntu:latest
+FROM --platform=amd64 almalinux/9-base:latest
 
 ###############################################################################
 # Set some information
@@ -34,7 +34,7 @@ ENV SERVER_NAME='Dedicated Server' \
     ALLOW_CHEATS='false' \
     MAX_PLAYERS='10' \
     ONLINE_MODE='true' \
-    WHITE_LIST='false' \
+    ALLOW_LIST='false' \
     SERVER_PORT='19132' \
     SERVER_PORTv6='19133' \
     VIEW_DISTANCE='32' \
@@ -54,13 +54,13 @@ ENV SERVER_NAME='Dedicated Server' \
     CORRECT_PLAYER_MOVEMENT='false' \
     SERVER_AUTHORITATIVE_BLOCK_BREAKING='false' \
     LEVEL_TYPE='DEFAULT' \
-    EULA='FALSE' \
-    DEBIAN_FRONTEND='noninteractive' \
+    EULA='false' \
+    EMIT_SERVER_TELEMETRY='false' \
     SERVER_PATH='/srv/bedrock-server' \
     CONFIG_PATH='/srv/bedrock-config' \
-    DATA_PATH='/srv/minecraft'
-ARG DOWNLOAD_URL='https://www.minecraft.net/en-us/download/server/bedrock' \
-    UIDGID='10999' \
+    DATA_PATH='/srv/minecraft' \
+    DOWNLOAD_URL='https://www.minecraft.net/en-us/download/server/bedrock'
+ARG UIDGID='10999' \
     USERGROUPNAME='minecraft'
 EXPOSE ${SERVER_PORT}/udp \
        ${SERVER_PORTv6}/udp
@@ -68,25 +68,10 @@ VOLUME ${DATA_PATH}
 
 ###############################################################################
 # Install Minecraft Bedrock Sevrer and necessary packages
-RUN apt-get update -y \
-    && apt-get install -y --no-install-recommends \
-        ca-certificates \
-        curl \
-        jq \
-        libcurl4 \
-        libssl1.1 \
-        unzip \
-    && apt-get dist-upgrade -y \
-    && apt-get autoremove -y \
-    && apt-get autoclean -y \
-    && rm -rf /var/lib/apt/lists/* \
-    && mkdir -p ${SERVER_PATH} \
-    && mkdir -p ${CONFIG_PATH} \
-    && mkdir -p ${DATA_PATH} \
-    && curl $(curl --user-agent "aessing/minecraft-bedrock-container" --header "accept-language:*" "${DOWNLOAD_URL}" | grep -Eoi '<a [^>]+>' | grep -i bin-linux | grep -Eo 'href="[^\"]+"' | grep -Eo '(http|https)://[a-zA-Z0-9./?=_%:-]*') --output ${SERVER_PATH}.zip \
-    && unzip ${SERVER_PATH}.zip -d ${SERVER_PATH} \
-    && chmod 755 ${SERVER_PATH}/bedrock_server \
-    && rm ${SERVER_PATH}.zip
+RUN dnf upgrade -y \
+    && dnf install -y compat-openssl11 jq libnsl unzip \
+    && dnf clean all -y \
+    && mkdir -p ${SERVER_PATH} ${CONFIG_PATH} ${DATA_PATH}
 
 ###############################################################################
 # Copy files
@@ -97,9 +82,7 @@ RUN chmod a+x ${CONFIG_PATH}/entrypoint.sh
 # Run in non-root context
 RUN groupadd -g ${UIDGID} -r ${USERGROUPNAME} \
     && useradd --no-log-init -g ${USERGROUPNAME} -r -s /bin/false -u ${UIDGID} ${USERGROUPNAME} \
-    && chown -R ${USERGROUPNAME}.${USERGROUPNAME} ${SERVER_PATH} \
-    && chown -R ${USERGROUPNAME}.${USERGROUPNAME} ${CONFIG_PATH} \
-    && chown -R ${USERGROUPNAME}.${USERGROUPNAME} ${DATA_PATH}
+    && chown -R ${USERGROUPNAME}.${USERGROUPNAME} ${SERVER_PATH} ${CONFIG_PATH} ${DATA_PATH}
 USER ${USERGROUPNAME}
 
 ###############################################################################
