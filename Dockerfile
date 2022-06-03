@@ -15,7 +15,7 @@
 
 ###############################################################################
 # Get the base Linux image
-FROM amd64/ubuntu:latest
+FROM --platform=amd64 almalinux/9-base:latest
 
 ###############################################################################
 # Set some information
@@ -68,25 +68,14 @@ VOLUME ${DATA_PATH}
 
 ###############################################################################
 # Install Minecraft Bedrock Sevrer and necessary packages
-RUN apt-get update -y \
-    && apt-get install -y --no-install-recommends \
-        ca-certificates \
-        curl \
-        jq \
-        libcurl4 \
-        libssl1.1 \
-        unzip \
-    && apt-get dist-upgrade -y \
-    && apt-get autoremove -y \
-    && apt-get autoclean -y \
-    && rm -rf /var/lib/apt/lists/* \
-    && mkdir -p ${SERVER_PATH} \
-    && mkdir -p ${CONFIG_PATH} \
-    && mkdir -p ${DATA_PATH} \
-    && curl $(curl --user-agent "aessing/minecraft-bedrock-container" --header "accept-language:*" "${DOWNLOAD_URL}" | grep -Eoi '<a [^>]+>' | grep -i bin-linux | grep -Eo 'href="[^\"]+"' | grep -Eo '(http|https)://[a-zA-Z0-9./?=_%:-]*') --output ${SERVER_PATH}.zip \
-    && unzip ${SERVER_PATH}.zip -d ${SERVER_PATH} \
-    && chmod 755 ${SERVER_PATH}/bedrock_server \
-    && rm ${SERVER_PATH}.zip
+RUN dnf upgrade -y \
+    && dnf install -y jq libnsl unzip \
+    && dnf clean all -y \
+    && mkdir -p ${SERVER_PATH} ${CONFIG_PATH} ${DATA_PATH}
+#    && curl $(curl --user-agent "aessing/minecraft-bedrock-container" --header "accept-language:*" "${DOWNLOAD_URL}" | grep -Eoi '<a [^>]+>' | grep -i bin-linux | grep -Eo 'href="[^\"]+"' | grep -Eo '(http|https)://[a-zA-Z0-9./?=_%:-]*') --output ${SERVER_PATH}.zip \
+#    && unzip ${SERVER_PATH}.zip -d ${SERVER_PATH} \
+#    && chmod 755 ${SERVER_PATH}/bedrock_server \
+#    && rm ${SERVER_PATH}.zip
 
 ###############################################################################
 # Copy files
@@ -97,9 +86,7 @@ RUN chmod a+x ${CONFIG_PATH}/entrypoint.sh
 # Run in non-root context
 RUN groupadd -g ${UIDGID} -r ${USERGROUPNAME} \
     && useradd --no-log-init -g ${USERGROUPNAME} -r -s /bin/false -u ${UIDGID} ${USERGROUPNAME} \
-    && chown -R ${USERGROUPNAME}.${USERGROUPNAME} ${SERVER_PATH} \
-    && chown -R ${USERGROUPNAME}.${USERGROUPNAME} ${CONFIG_PATH} \
-    && chown -R ${USERGROUPNAME}.${USERGROUPNAME} ${DATA_PATH}
+    && chown -R ${USERGROUPNAME}.${USERGROUPNAME} ${SERVER_PATH} ${CONFIG_PATH} ${DATA_PATH}
 USER ${USERGROUPNAME}
 
 ###############################################################################

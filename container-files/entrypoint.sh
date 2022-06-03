@@ -36,6 +36,15 @@ if [[ "${EULA^^}" != "TRUE" ]]; then
 fi
 
 ###############################################################################
+# Install Minecraft if not exists
+if ! [ -d "${SERVER_PATH}" ]; then
+    curl $(curl --user-agent "aessing/minecraft-bedrock-container" --header "accept-language:*" "${DOWNLOAD_URL}" | grep -Eoi '<a [^>]+>' | grep -i bin-linux | grep -Eo 'href="[^\"]+"' | grep -Eo '(http|https)://[a-zA-Z0-9./?=_%:-]*') --output ${SERVER_PATH}.zip
+    unzip ${SERVER_PATH}.zip -d ${SERVER_PATH}
+    chmod 755 ${SERVER_PATH}/bedrock_server
+    rm ${SERVER_PATH}.zip
+fi
+
+###############################################################################
 # Save and load the server- and level-name
 if ! [ -f "${DATA_PATH}/names" ]; then
     echo "SERVER_NAME='$SERVER_NAME'" > "${DATA_PATH}/names"
@@ -76,22 +85,22 @@ if ! [ -f "${DATA_PATH}/server.properties" ]; then
     cp "${SERVER_PATH}/server.properties" "${DATA_PATH}/server.properties"
 fi
 if ! [ -f "${DATA_PATH}/permissions.json" ]; then
-    cp "${SERVER_PATH}/permissions.json" "${DATA_PATH}/permissions.json"
+    echo "[]" > "${DATA_PATH}/permissions.json"
 fi
 if ! [ -f "${DATA_PATH}/whitelist.json" ]; then
-    cp "${SERVER_PATH}/whitelist.json" "${DATA_PATH}/whitelist.json"
+    echo "[]" > "${DATA_PATH}/whitelist.json"
 fi
 if ! [ -f "${DATA_PATH}/invalid_known_packs.json" ]; then
-    cp "${CONFIG_PATH}/invalid_known_packs.json" "${DATA_PATH}/invalid_known_packs.json"
+    echo "[]" > "${DATA_PATH}/invalid_known_packs.json"
 fi
 if ! [ -f "${DATA_PATH}/valid_known_packs.json" ]; then
-    cp "${CONFIG_PATH}/valid_known_packs.json" "${DATA_PATH}/valid_known_packs.json"
+    echo "[]" > "${DATA_PATH}/valid_known_packs.json"
 fi
 
 ###############################################################################
 # Link custom path folders and files into the server directory
 if ! [ -f "${CONFIG_PATH}/first_run_done" ]; then
-    cp -f "${SERVER_PATH}/server.properties" "${DATA_PATH}/server.properties.mojang"
+    rm -rf "${DATA_PATH}/server.properties.mojang" && cp -f "${SERVER_PATH}/server.properties" "${DATA_PATH}/server.properties.mojang"
     rm -rf "${SERVER_PATH}/worlds" && ln -s "${DATA_PATH}/worlds" "${SERVER_PATH}/worlds"
     rm -rf "${SERVER_PATH}/resource_packs" && ln -s "${DATA_PATH}/resource_packs" "${SERVER_PATH}/resource_packs"
     rm -rf "${SERVER_PATH}/behavior_packs" && ln -s "${DATA_PATH}/behavior_packs" "${SERVER_PATH}/behavior_packs"
@@ -102,7 +111,6 @@ if ! [ -f "${CONFIG_PATH}/first_run_done" ]; then
     rm -f "${SERVER_PATH}/whitelist.json" && ln -s "${DATA_PATH}/whitelist.json" "${SERVER_PATH}/whitelist.json"
     rm -f "${SERVER_PATH}/valid_known_packs.json" && ln -s "${DATA_PATH}/valid_known_packs.json" "${SERVER_PATH}/valid_known_packs.json"
     rm -f "${SERVER_PATH}/invalid_known_packs.json" && ln -s "${DATA_PATH}/invalid_known_packs.json" "${SERVER_PATH}/invalid_known_packs.json"
-    date > ${CONFIG_PATH}/first_run_done
 fi
 
 ###############################################################################
