@@ -54,13 +54,37 @@ echo "# WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE."
 echo "# ============================================================================="
 echo ""
 
+###############################################################################
+# Set some variables
+DOWNLOAD_URL='https://www.minecraft.net/en-us/download/server/bedrock'
+MINECRAFT_VERSION='1.18.31.04'
 
 ###############################################################################
 # Install Minecraft if not exists
 if ! [ -f "${SERVER_PATH}/bedrock_server" ]; then
     echo ""
     echo "- Installing Minecraft Bedrock Server from ${DOWNLOAD_URL}"
-    curl $(curl --user-agent "aessing/minecraft-bedrock-container" --header "accept-language:*" "${DOWNLOAD_URL}" | grep -Eoi '<a [^>]+>' | grep -i bin-linux | grep -Eo 'href="[^\"]+"' | grep -Eo '(http|https)://[a-zA-Z0-9./?=_%:-]*') --output /tmp/bedrock.zip
+
+    if [ -n "${MINECRAFT_VERSION}" ]; then
+       if curl --head --silent --fail "https://minecraft.azureedge.net/bin-linux/bedrock-server-${MINECRAFT_VERSION}.zip" 2> /dev/null; then
+            echo "- Installing Minecraft Bedrock Server version ${MINECRAFT_VERSION}"
+            curl "https://minecraft.azureedge.net/bin-linux/bedrock-server-${MINECRAFT_VERSION}.zip" --output /tmp/bedrock.zip
+        else
+            echo ""
+            echo "MINECRAFT VERSION DOES NOT EXIST ON DOWNLOAD SERVER"
+            echo "--------------------------------------------------------------------------------"
+            echo "This Minecraft Bedrocks Server Version does not exist."
+            echo "Please check https://minecraft.fandom.com/de/wiki/Bedrock_Dedicated_Server for "
+            echo "available versions."
+            echo "--------------------------------------------------------------------------------"
+            echo ""
+            #exit 1
+        fi
+    else
+        echo "- Installing latest Minecraft Bedrock Server version"
+        curl $(curl --user-agent "aessing/minecraft-bedrock-container" --header "accept-language:*" "${DOWNLOAD_URL}" | grep -Eoi '<a [^>]+>' | grep -i bin-linux | grep -Eo 'href="[^\"]+"' | grep -Eo '(http|https)://[a-zA-Z0-9./?=_%:-]*') --output /tmp/bedrock.zip
+    fi    
+    
     unzip /tmp/bedrock.zip -d ${SERVER_PATH}
     chmod 755 ${SERVER_PATH}/bedrock_server
     rm /tmp/bedrock.zip
