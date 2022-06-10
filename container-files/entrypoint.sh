@@ -18,25 +18,11 @@
 set -eo pipefail
 
 ###############################################################################
-# The EULA of Mojang has to be accepted, otherwise you can't use Minecraft Bedrocks Server
-if [[ "${EULA^^}" != "TRUE" ]]; then
-    echo
-    echo "MOJANG MINECRAFT END USER LICENSE AGREEMENT"
-    echo "-------------------------------------------------------------------------------------"
-    echo "You must agree to the Minecraft End User License Agreement and Privacy Policy."
-    echo "See https://account.mojang.com/terms & https://privacy.microsoft.com/privacystatement"
-    echo
-    echo "The Environment variable EULA must be set to TRUE, to indicate your agreement with"
-    echo "the Minecraft End User License Agreement."
-    echo
-    echo "The current value is '${EULA}'"
-    echo "-------------------------------------------------------------------------------------"
-    echo
-    exit 1
-fi
+# Set some variables
+DOWNLOAD_URL='https://www.minecraft.net/en-us/download/server/bedrock'
 
 ###############################################################################
-# Install Minecraft if not exists
+# Print header
 echo ""
 echo ""
 echo "# ============================================================================="
@@ -55,30 +41,43 @@ echo "# ========================================================================
 echo ""
 
 ###############################################################################
-# Set some variables
-DOWNLOAD_URL='https://www.minecraft.net/en-us/download/server/bedrock'
-MINECRAFT_VERSION='1.18.31.04'
+# The EULA of Mojang has to be accepted, otherwise you can't use Minecraft Bedrocks Server
+if [[ "${EULA^^}" != "TRUE" ]]; then
+    echo ""
+    echo "MOJANG MINECRAFT END USER LICENSE AGREEMENT"
+    echo "-------------------------------------------------------------------------------------"
+    echo "You must agree to the Minecraft End User License Agreement and Privacy Policy."
+    echo "See https://account.mojang.com/terms & https://privacy.microsoft.com/privacystatement"
+    echo
+    echo "The environment variable EULA must be set to TRUE, to indicate your agreement with"
+    echo "the Minecraft End User License Agreement."
+    echo
+    echo "The current value is '${EULA}'"
+    echo "-------------------------------------------------------------------------------------"
+    echo ""
+    exit 1
+fi
 
 ###############################################################################
 # Install Minecraft if not exists
 if ! [ -f "${SERVER_PATH}/bedrock_server" ]; then
     echo ""
-    echo "- Installing Minecraft Bedrock Server from ${DOWNLOAD_URL}"
+    echo "- Minecraft Bedrock Server will be downloaded from ${DOWNLOAD_URL}"
 
     if [ -n "${MINECRAFT_VERSION}" ]; then
-       if curl --head --silent --fail "https://minecraft.azureedge.net/bin-linux/bedrock-server-${MINECRAFT_VERSION}.zip" 2> /dev/null; then
+       if curl --head --silent --fail "https://minecraft.azureedge.net/bin-linux/bedrock-server-${MINECRAFT_VERSION}.zip" 2>&1 > /dev/null; then
             echo "- Installing Minecraft Bedrock Server version ${MINECRAFT_VERSION}"
             curl "https://minecraft.azureedge.net/bin-linux/bedrock-server-${MINECRAFT_VERSION}.zip" --output /tmp/bedrock.zip
         else
             echo ""
             echo "MINECRAFT VERSION DOES NOT EXIST ON DOWNLOAD SERVER"
             echo "--------------------------------------------------------------------------------"
-            echo "This Minecraft Bedrocks Server Version does not exist."
+            echo "This Minecraft Bedrocks Server version does not exist."
             echo "Please check https://minecraft.fandom.com/de/wiki/Bedrock_Dedicated_Server for "
             echo "available versions."
             echo "--------------------------------------------------------------------------------"
             echo ""
-            #exit 1
+            exit 1
         fi
     else
         echo "- Installing latest Minecraft Bedrock Server version"
@@ -94,7 +93,7 @@ fi
 # Save and load the server- and level-name
 if ! [ -f "${DATA_PATH}/names" ]; then
     echo ""
-    echo "- Save and load the server- and level-name"
+    echo "- Save and load the SERVER_NAME and LEVEL_NAME"
     echo "SERVER_NAME='$SERVER_NAME'" > "${DATA_PATH}/names"
     echo "LEVEL_NAME='$LEVEL_NAME'" >> "${DATA_PATH}/names"
 else
@@ -175,34 +174,35 @@ fi
 echo ""
 echo "- Set settings in server.properties"
 cat > "${DATA_PATH}/server.properties" <<EOL
-server-name=$SERVER_NAME
-level-name=$LEVEL_NAME
-gamemode=$GAMEMODE
-force-gamemode=$FORCE_GAMEMODE
-difficulty=$DIFFICULTY
-allow-cheats=$ALLOW_CHEATS
-max-players=$MAX_PLAYERS
-online-mode=$ONLINE_MODE
-white-list=$ALLOW_LIST
-server-port=$SERVER_PORT
-server-portv6=$SERVER_PORTv6
-view-distance=$VIEW_DISTANCE
-tick-distance=$TICK_DISTANCE
-player-idle-timeout=$PLAYER_IDLE_TIMEOUT
-max-threads=$MAX_THREADS
-level-seed=$LEVEL_SEED
-default-player-permission-level=$DEFAULT_PLAYER_PERMISSION_LEVEL
-texturepack-required=$TEXTUREPACK_REQUIRED
-content-log-file-enabled=$CONTENT_LOG_FILE
-compression-threshold=$COMPRESSION_THRESHOLD
-server-authoritative-movement=$SERVER_AUTHORITATIVE_MOVEMENT
-player-movement-score-threshold=$PLAYER_MOVEMENT_SCORE_THRESHOLD
-player-movement-distance-threshold=$PLAYER_MOVEMENT_DISTANCE_THRESHOLD
-player-movement-duration-threshold-in-ms=$PLAYER_MOVEMENT_DURATION_THRESHOLD
-correct-player-movement=$CORRECT_PLAYER_MOVEMENT
-server-authoritative-block-breaking=$SERVER_AUTHORITATIVE_BLOCK_BREAKING
-level-type=$LEVEL_TYPE
-emit-server-telemetry=$EMIT_SERVER_TELEMETRY
+server-name=${SERVER_NAME}
+level-name=${LEVEL_NAME}
+gamemode=${GAMEMODE,,}
+force-gamemode=${FORCE_GAMEMODE,,}
+difficulty=${DIFFICULTY,,}
+allow-cheats=${ALLOW_CHEATS,,}
+max-players=${MAX_PLAYERS}
+online-mode=${ONLINE_MODE,,}
+allow-list=${ALLOW_LIST,,}
+server-port=${SERVER_PORT}
+server-portv6=${SERVER_PORTv6}
+view-distance=${VIEW_DISTANCE}
+tick-distance=${TICK_DISTANCE}
+player-idle-timeout=${PLAYER_IDLE_TIMEOUT}
+max-threads=${MAX_THREADS}
+level-seed=${LEVEL_SEED}
+default-player-permission-level=${DEFAULT_PLAYER_PERMISSION_LEVEL,,}
+texturepack-required=${TEXTUREPACK_REQUIRED,,}
+content-log-file-enabled=${CONTENT_LOG_FILE_ENABLED,,}
+compression-threshold=${COMPRESSION_THRESHOLD}
+server-authoritative-movement=${SERVER_AUTHORITATIVE_MOVEMENT,,}
+player-movement-score-threshold=${PLAYER_MOVEMENT_SCORE_THRESHOLD}
+player-movement-action-direction-threshold=${PLAYER_MOVEMENT_ACTION_DIRECTION_THRESHOLD}
+player-movement-distance-threshold=${PLAYER_MOVEMENT_DISTANCE_THRESHOLD}
+player-movement-duration-threshold-in-ms=${PLAYER_MOVEMENT_DURATION_THRESHOLD}
+correct-player-movement=${CORRECT_PLAYER_MOVEMENT,,}
+server-authoritative-block-breaking=${SERVER_AUTHORITATIVE_BLOCK_BREAKING,,}
+level-type=${LEVEL_TYPE,,}
+emit-server-telemetry=${EMIT_SERVER_TELEMETRY,,}
 EOL
 
 ###############################################################################
@@ -222,7 +222,6 @@ if [ -n "$ALLOWED_USER_GAMERTAGS" ]; then
     jq -n --arg users "$ALLOWED_USER_GAMERTAGS" '[
             [$users | split(",") | map({"name":.})]
         ] | flatten' > "${DATA_PATH}/allowlist.json"
-    export ALLOW_LIST=true
 fi
 
 ###############################################################################
